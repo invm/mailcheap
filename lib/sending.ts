@@ -186,6 +186,7 @@ async function insertIgnoringDuplicates(messages: object[]): Promise<void> {
 	try {
 		await Message.insertMany(messages, { ordered: false });
 	} catch (error) {
+		// Mongoose copies the driver's WriteErrors, which keeps the code on `err`.
 		const codes = ((error as { writeErrors?: Array<{ err?: { code?: number }; code?: number }> })?.writeErrors ?? []).map(({ err, code }) => err?.code ?? code);
 		const isOnlyDuplicates =
 			codes.length > 0 ? codes.every((code) => code === 11000) : (error as { code?: number })?.code === 11000;
