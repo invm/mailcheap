@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { getPresendChecks } from "../lib/presend-checks.ts";
 import { UNSUBSCRIBE_PLACEHOLDER, renderEmail } from "../lib/render-email.ts";
 
-const newsletter = { name: "Jane Doe", postalAddress: "1 Main St, Paris" };
+const newsletter = { name: "Jane Doe", postalAddress: "1 Main St, Paris" } as never;
 
 test("markdown emails get a footer with the unsubscribe placeholder and address", () => {
 	const { html, text, bytes } = renderEmail({
@@ -93,14 +93,14 @@ test("generated HTML prints the subject and preview text, and email-only parts s
 
 test("presend checks block on missing essentials and sending off", () => {
 	const campaign = { subject: "", previewText: "", body: "" };
-	const rendered = renderEmail({ markdown: "", newsletter: {} });
+	const rendered = renderEmail({ markdown: "", newsletter: {} as never });
 	const { blocking } = getPresendChecks({
 		campaign,
-		newsletter: {},
+		newsletter: {} as never,
 		rendered,
 		isDomainVerified: false,
 		isSendingEnabled: false,
-	});
+	} as never);
 	assert.deepEqual(
 		blocking.map(({ id }) => id),
 		["subject", "content", "address", "domain", "sending"]
@@ -116,7 +116,7 @@ test("presend checks pass when everything is ready", () => {
 		rendered,
 		isDomainVerified: true,
 		isSendingEnabled: true,
-	});
+	} as never);
 	assert.equal(blocking.length, 0);
 	assert.ok(checks.every(({ isOk }) => isOk));
 });

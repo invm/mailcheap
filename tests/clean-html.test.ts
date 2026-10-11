@@ -33,13 +33,13 @@ const payloads = {
 const CLEAN_TAG_PATTERN = /<\/?([a-z][a-z0-9]*)((?:\s+[a-z-]+(?:="[^"]*")?)*)\s*\/?>/g;
 const URL_PATTERNS = { href: /^(https?:|mailto:|#|\/)/i, src: /^https?:\/\//i };
 
-function assertInert(html, label) {
-	const text = html.replace(CLEAN_TAG_PATTERN, (_, tag, attributes) => {
+function assertInert(html: string, label: string) {
+	const text = html.replace(CLEAN_TAG_PATTERN, (_: string, tag: string, attributes: string) => {
 		assert.ok(CONTENT_TAGS.includes(tag), `${label}: <${tag}> in ${html}`);
 		for (const [, name, value = ""] of attributes.matchAll(/([a-z-]+)(?:="([^"]*)")?/g)) {
 			assert.ok(!name.startsWith("on"), `${label}: ${name} in ${html}`);
 			assert.ok(!/javascript:|data:/i.test(value), `${label}: ${name}="${value}"`);
-			if (URL_PATTERNS[name]) assert.match(value, URL_PATTERNS[name], `${label}: ${name}="${value}"`);
+			if (URL_PATTERNS[name as keyof typeof URL_PATTERNS]) assert.match(value, URL_PATTERNS[name as keyof typeof URL_PATTERNS], `${label}: ${name}="${value}"`);
 		}
 		return "";
 	});
@@ -73,11 +73,11 @@ test("markup the cleaners don't know can't run on an archive page, whatever path
 			{ format: "markdown", markdown: payload },
 			{ format: "markdown", markdown: payload, source: "api" },
 		]) {
-			const body = renderIssueBody(campaign);
+			const body = renderIssueBody(campaign as never);
 			assert.equal(body.kind, "article");
 			assertInert(body.html, `${label} (${campaign.source ?? ""} ${campaign.format} issue)`);
 		}
-		assert.equal(renderIssueBody({ format: "html", html: payload, source: "api" }).kind, "frame", label);
+		assert.equal(renderIssueBody({ format: "html", html: payload, source: "api" } as never).kind, "frame", label);
 	}
 });
 

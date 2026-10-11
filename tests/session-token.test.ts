@@ -12,7 +12,7 @@ const { getClickUrl, getOpenUrl } = await import("../lib/tracking.ts");
 const { createConfirmToken } = await import("../lib/confirmation.ts");
 const { createKeepToken } = await import("../lib/last-chance.ts");
 
-async function withEnv(values, run) {
+async function withEnv(values: Record<string, string | undefined>, run: () => Promise<void>) {
 	const previous = Object.fromEntries(Object.keys(values).map((key) => [key, process.env[key]]));
 	Object.assign(process.env, values);
 	try {
@@ -29,7 +29,7 @@ test("a session lasts 7 days and verifies while the admin login is unchanged", a
 	const token = await signSessionToken("admin@example.com");
 	const { iat, exp } = decodeJwt(token);
 	assert.equal(SESSION_MAX_AGE, 7 * 24 * 60 * 60);
-	assert.equal(exp - iat, SESSION_MAX_AGE);
+	assert.equal(exp! - iat!, SESSION_MAX_AGE);
 	assert.deepEqual(await verifySessionToken(token), { email: "admin@example.com" });
 });
 
@@ -94,7 +94,7 @@ test("email links keep their signatures", () => {
 test("production keeps the session in a __Host- cookie", async () => {
 	assert.equal(SESSION_COOKIE, "mailcheap_session");
 	await withEnv({ NODE_ENV: "production" }, async () => {
-		const production = await import("../lib/session-token.ts?production");
+		const production = await import("../lib/session-token.ts?production" as never) as { SESSION_COOKIE: string };
 		assert.equal(production.SESSION_COOKIE, "__Host-mailcheap_session");
 	});
 });

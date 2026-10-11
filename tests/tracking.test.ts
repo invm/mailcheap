@@ -10,8 +10,8 @@ process.env.APP_URL = "https://mail.example.com";
 const BASE = "https://mail.example.com";
 const MESSAGE_ID = "66f1a2b3c4d5e6f7a8b9c0d1";
 
-function tokenOf(url) {
-	return url.split("/").pop();
+function tokenOf(url: string): string {
+	return url.split("/").pop()!;
 }
 
 test("open and click links carry the message and can't be forged", () => {
@@ -25,7 +25,7 @@ test("open and click links carry the message and can't be forged", () => {
 
 	const [id, signature] = tokenOf(getClickUrl(BASE, MESSAGE_ID, url)).split(".");
 	const swapped = `${id}.${signature}.${Buffer.from("https://evil.example").toString("base64url")}`;
-	assert.equal(readClickToken(swapped).isSigned, false, "another destination breaks the signature");
+	assert.equal(readClickToken(swapped)!.isSigned, false, "another destination breaks the signature");
 	assert.equal(readClickToken(`${id}.${signature}.${Buffer.from("javascript:alert(1)").toString("base64url")}`), null);
 	assert.equal(readClickToken("not-a-token"), null);
 });
@@ -52,7 +52,7 @@ test("links go through Mailcheap except unsubscribe links, and the pixel comes f
 test("sent emails are tracked and keep a direct unsubscribe link", () => {
 	const email = buildRecipientEmail({
 		campaign: { format: "rich", subject: "Hi", html: '<p><a href="https://example.org">Example</a></p>' },
-		newsletter: { _id: "74f1a2b3c4d5e6f7a8b9c0d2", name: "Field notes", fromEmail: "hi@mail.example.com" },
+		newsletter: { _id: "74f1a2b3c4d5e6f7a8b9c0d2", name: "Field notes", fromEmail: "hi@mail.example.com" } as never,
 		contact: { _id: "64f1a2b3c4d5e6f7a8b9c0d1", email: "reader@example.com" },
 		messageId: MESSAGE_ID,
 	});

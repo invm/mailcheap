@@ -34,7 +34,7 @@ const campaign = {
 	markdown: "# Hello\n\nRead [this](https://example.com).",
 };
 
-function sesError(name, message = name) {
+function sesError(name: string, message = name) {
 	return Object.assign(new Error(message), { name });
 }
 
@@ -68,7 +68,7 @@ test("custom HTML keeps its own unsubscribe link, filled in per recipient", () =
 		newsletter: { ...newsletter, replyTo: "hello@example.net" },
 		contact,
 	});
-	assert.equal(email.html.match(/unsubscribe\?token=/g).length, 1);
+	assert.equal(email.html.match(/unsubscribe\?token=/g)!.length, 1);
 	assert.ok(!email.html.includes(UNSUBSCRIBE_PLACEHOLDER));
 	assert.ok(email.text.includes(email.unsubscribeUrl));
 	assert.equal(email.replyTo, "hello@example.net");
@@ -169,7 +169,7 @@ test("send problems block incomplete or oversized emails", () => {
 	);
 
 	const oversized = { ...campaign, markdown: "word ".repeat(30_000) };
-	assert.match(getSendProblem({ campaign: oversized, newsletter }), /Gmail clips emails over 100 KB/);
+	assert.match(getSendProblem({ campaign: oversized, newsletter })!, /Gmail clips emails over 100 KB/);
 });
 
 test("welcome content needs the toggle, a subject, and content", () => {
@@ -184,7 +184,7 @@ test("welcome content needs the toggle, a subject, and content", () => {
 		markdown: "Hello",
 		previewText: "",
 	});
-	assert.equal(getWelcomeContent({ welcome: { ...welcome, previewText: " Reply hi " } }).previewText, "Reply hi");
+	assert.equal(getWelcomeContent({ welcome: { ...welcome, previewText: " Reply hi " } })!.previewText, "Reply hi");
 });
 
 test("chunk splits ids into send batches", () => {

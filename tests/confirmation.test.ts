@@ -32,13 +32,13 @@ test("unsubscribe and confirmation links can't stand in for each other", () => {
 });
 
 test("the confirmation email carries a clean link in both versions", () => {
-	const content = getConfirmationContent({ name: "Field notes" });
+	const content = getConfirmationContent({ name: "Field notes" } as never);
 	assert.equal(content.subject, "Confirm your subscription to Field notes");
-	assert.ok(content.markdown.includes(CONFIRM_URL_PLACEHOLDER));
+	assert.ok(content.markdown!.includes(CONFIRM_URL_PLACEHOLDER));
 
 	const email = buildRecipientEmail({
 		campaign: content,
-		newsletter: { _id: REFERENCE.newsletterId, name: "Field notes", fromEmail: "hi@news.example.org" },
+		newsletter: { _id: REFERENCE.newsletterId, name: "Field notes", fromEmail: "hi@news.example.org" } as never,
 		contact: { _id: REFERENCE.contactId, email: "reader@example.com" },
 		messageId: null,
 		confirmUrl: "https://mailcheap.test/confirm?token=abc",
@@ -46,7 +46,7 @@ test("the confirmation email carries a clean link in both versions", () => {
 	assert.ok(email.html.includes('href="https://mailcheap.test/confirm?token=abc"'));
 	assert.ok(email.text.includes("Confirm my subscription (https://mailcheap.test/confirm?token=abc)"));
 	assert.ok(!email.html.includes("/c/") && !email.html.includes("/o/"), "no tracking redirect or pixel");
-	assert.ok(renderEmail(content).html.includes(CONFIRM_URL_PLACEHOLDER), "the link is filled per recipient");
+	assert.ok(renderEmail(content as never).html.includes(CONFIRM_URL_PLACEHOLDER), "the link is filled per recipient");
 });
 
 test("a newsletter's own confirmation email goes out with each subscriber's link", () => {
@@ -63,13 +63,13 @@ Every Sunday, you'll get:
 
 - One idea about building things`,
 	};
-	const content = getConfirmationContent({ name: "Field notes", confirmation });
+	const content = getConfirmationContent({ name: "Field notes", confirmation } as never);
 	assert.equal(content.subject, "[Action Required] Confirm your Field notes subscription");
 	assert.equal(content.previewText, "One click and you're in.");
 
 	const email = buildRecipientEmail({
 		campaign: content,
-		newsletter: { _id: REFERENCE.newsletterId, name: "Field notes", fromEmail: "hi@news.example.org" },
+		newsletter: { _id: REFERENCE.newsletterId, name: "Field notes", fromEmail: "hi@news.example.org" } as never,
 		contact: { _id: REFERENCE.contactId, email: "reader@example.com" },
 		messageId: null,
 		confirmUrl: "https://mailcheap.test/confirm?token=xyz",
@@ -84,43 +84,43 @@ Every Sunday, you'll get:
 });
 
 test("a confirmation email without its button can't be saved and never goes out", () => {
-	const builtIn = getConfirmationContent({ name: "Field notes" });
+	const builtIn = getConfirmationContent({ name: "Field notes" } as never);
 	assert.equal(getConfirmationProblem(builtIn), null);
 	assert.equal(getConfirmationProblem({ ...builtIn, subject: " " }), "Confirmation email needs a subject");
 
 	const buttonProblem = /^Confirmation email needs its button: a link like <a href="\{\{confirm_url\}\}">/;
-	assert.match(getConfirmationProblem({ ...builtIn, markdown: "Welcome to Field notes" }), buttonProblem);
+	assert.match(getConfirmationProblem({ ...builtIn, markdown: "Welcome to Field notes" })!, buttonProblem);
 	assert.match(
-		getConfirmationProblem({ ...builtIn, markdown: `[Confirm](${CONFIRM_URL_PLACEHOLDER})` }),
+		getConfirmationProblem({ ...builtIn, markdown: `[Confirm](${CONFIRM_URL_PLACEHOLDER})` })!,
 		buttonProblem,
 		"a Markdown link encodes the braces, so the link would be dead"
 	);
 	assert.match(
-		getConfirmationProblem({ ...builtIn, markdown: `    <a href="${CONFIRM_URL_PLACEHOLDER}">Confirm</a>` }),
+		getConfirmationProblem({ ...builtIn, markdown: `    <a href="${CONFIRM_URL_PLACEHOLDER}">Confirm</a>` })!,
 		buttonProblem,
 		"an indented line is a code block"
 	);
 
 	const withoutButton = { name: "Field notes", confirmation: { subject: "Welcome", markdown: "No button here" } };
-	assert.deepEqual(getConfirmationContent(withoutButton), builtIn, "the built-in email goes out instead");
+	assert.deepEqual(getConfirmationContent(withoutButton as never), builtIn, "the built-in email goes out instead");
 });
 
 test("newsletters that confirm signups send no welcome email; the others still do", () => {
 	const welcome = { enabled: true, subject: "Welcome to Field notes", markdown: "Hello" };
-	assert.equal(getWelcomeContent({ requireConfirmation: true, welcome }), null);
-	assert.equal(getWelcomeContent({ requireConfirmation: false, welcome }).subject, "Welcome to Field notes");
-	assert.equal(getWelcomeContent({ welcome }).subject, "Welcome to Field notes");
+	assert.equal(getWelcomeContent({ requireConfirmation: true, welcome } as never), null);
+	assert.equal(getWelcomeContent({ requireConfirmation: false, welcome } as never)!.subject, "Welcome to Field notes");
+	assert.equal(getWelcomeContent({ welcome } as never)!.subject, "Welcome to Field notes");
 });
 
 test("the check-your-inbox button opens the subscriber's webmail", () => {
 	const webmails = { "googlemail.com": "Gmail", "hotmail.co.uk": "Outlook", "proton.me": "Proton Mail" };
 	const inboxes = Object.keys(webmails).map((domain) => getInbox({ email: `reader@${domain}`, fromEmail: "hi@news.example.org" }));
 	assert.deepEqual(
-		inboxes.map(({ name }) => name),
+		(inboxes as { name: string; url: string }[]).map(({ name }) => name),
 		Object.values(webmails)
 	);
 	const [gmail] = inboxes;
-	assert.ok(gmail.url.startsWith("https://mail.google.com/mail/u/0/#search/"));
-	assert.ok(decodeURIComponent(gmail.url).includes("from:hi@news.example.org in:anywhere"));
+	assert.ok(gmail!.url.startsWith("https://mail.google.com/mail/u/0/#search/"));
+	assert.ok(decodeURIComponent(gmail!.url).includes("from:hi@news.example.org in:anywhere"));
 	assert.equal(getInbox({ email: "founder@acme.example" }), null);
 });

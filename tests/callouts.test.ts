@@ -20,7 +20,7 @@ test("highlights lose their inline colors", () => {
 const markdown = "Intro\n\n:::box\n**Project update**\n\n- Shipped the editor\n:::\n\n:::box\nSponsor\n:::\n\nOutro";
 
 test("Markdown boxes become archive boxes", () => {
-	const { html } = renderIssueBody({ format: "markdown", markdown });
+	const { html } = renderIssueBody({ format: "markdown", markdown } as never);
 	assert.ok(
 		html.includes('<div data-callout=""><p><strong>Project update</strong></p>\n<ul>\n<li>Shipped the editor</li>\n</ul>\n</div>')
 	);
@@ -29,7 +29,7 @@ test("Markdown boxes become archive boxes", () => {
 });
 
 test("Markdown boxes are gray inline-styled boxes in emails", () => {
-	const { html, text } = renderEmail({ format: "markdown", markdown, newsletter: { name: "Field notes" } });
+	const { html, text } = renderEmail({ format: "markdown", markdown, newsletter: { name: "Field notes" } as never });
 	assert.equal(html.split("border-radius:12px;background:#f4f4f5;").length - 1, 2);
 	assert.ok(!html.includes(":::"));
 	assert.match(text, /Shipped the editor/);

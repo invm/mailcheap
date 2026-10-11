@@ -45,14 +45,14 @@ test("normalizes a row and applies a stricter status override only", () => {
 		columns,
 		{ status: "dormant" }
 	);
-	assert.equal(active.email, "jane@example.com");
-	assert.equal(active.status, "dormant");
-	assert.equal(active.subscribedAt, new Date("2024-01-02").toISOString());
+	assert.equal(active!.email, "jane@example.com");
+	assert.equal(active!.status, "dormant");
+	assert.equal(active!.subscribedAt, new Date("2024-01-02").toISOString());
 
 	const unsubscribed = normalizeImportRow({ email: "reader@example.com", status: "inactive" }, columns, {
 		status: "dormant",
 	});
-	assert.equal(unsubscribed.status, "unsubscribed");
+	assert.equal(unsubscribed!.status, "unsubscribed");
 	assert.equal(normalizeImportRow({ email: "not-an-email" }, columns), null);
 });
 

@@ -29,7 +29,7 @@ test("the hero image loads first and the others lazily", () => {
 });
 
 test("issues pick the article layout unless their HTML has its own design", () => {
-	const markdown = renderIssueBody({ format: "markdown", markdown: "## Hi\n\n![a](https://x.test/a.png)" });
+	const markdown = renderIssueBody({ format: "markdown", markdown: "## Hi\n\n![a](https://x.test/a.png)" } as never);
 	assert.equal(markdown.kind, "article");
 	assert.ok(markdown.html.includes("<h2>Hi</h2>"));
 	assert.ok(markdown.html.includes('fetchpriority="high"'));
@@ -48,13 +48,13 @@ test("issues pick the article layout unless their HTML has its own design", () =
 
 test("HTML sent through the API keeps its frame, even when it reads like an article", () => {
 	const html = '<h2 id="chapter-1">Chapter 1</h2><p onclick="alert(1)">Hi <x_ onpointerover="alert(2)">there</x_></p>';
-	assert.equal(renderIssueBody({ format: "html", html, source: "api" }).kind, "frame");
+	assert.equal(renderIssueBody({ format: "html", html, source: "api" } as never).kind, "frame");
 
 	const markdown = renderIssueBody({
 		format: "markdown",
 		markdown: '<p onclick="alert(1)">Hi <x_ onpointerover="alert(2)">there</x_></p>',
 		source: "api",
-	});
+	} as never);
 	assert.deepEqual(markdown, { kind: "article", html: "<p>Hi there</p>" });
 });
 
@@ -71,7 +71,7 @@ test("Markdown tables, code and strikethrough keep their markup on the archive",
 	const { html } = renderIssueBody({
 		format: "markdown",
 		markdown: "#### Four\n\n| a | b |\n| - | - |\n| 1 | 2 |\n\n```\ncode\n```\n\n~~old~~ `inline`",
-	});
+	} as never);
 	assert.ok(html.includes("<h4>Four</h4>"));
 	assert.ok(html.includes("<thead>\n<tr>\n<th>a</th>") && html.includes("<tbody><tr>\n<td>1</td>"));
 	assert.ok(html.includes("<pre><code>code\n</code></pre>"));
@@ -85,7 +85,7 @@ test("scripts and unsafe links hidden from the cleaner don't reach the page", ()
 		'<p>Hi</p><img src=x onerror="alert(3)"><a href=" javascript:alert(4)">x</a>',
 		"<p>Bye</p><script src=//evil.test/x.js",
 	].join("");
-	for (const html of [cleanRichHtml(tricks), renderIssueBody({ format: "markdown", markdown: tricks }).html]) {
+	for (const html of [cleanRichHtml(tricks), renderIssueBody({ format: "markdown", markdown: tricks } as never).html]) {
 		assert.ok(!/<script|onerror|javascript:|<[^>]*\/\/evil/i.test(html), html);
 		assert.ok(html.includes("Hi") && html.includes("Bye"));
 	}

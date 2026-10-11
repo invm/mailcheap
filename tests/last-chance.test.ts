@@ -42,10 +42,10 @@ test("keep, confirmation and unsubscribe links can't stand in for each other", (
 });
 
 test("the last-chance email asks one question, with a clean button", () => {
-	const content = getLastChanceContent(NEWSLETTER);
+	const content = getLastChanceContent(NEWSLETTER as never);
 	assert.equal(content.subject, "Do you still want Field notes?");
 	assert.ok(!/action required/i.test(`${content.subject} ${content.previewText} ${content.markdown}`));
-	assert.equal(content.markdown.match(/<a /g).length, 1, "one button");
+	assert.equal(content.markdown.match(/<a /g)!.length, 1, "one button");
 
 	const keepUrl = getKeepUrl(REFERENCE);
 	const email = buildRecipientEmail({

@@ -34,36 +34,36 @@ const confirmation = {
 	Timestamp: "2026-10-04T12:00:00.000Z",
 };
 
-function signMessage(message, signatureVersion = "2", key = privateKey) {
+function signMessage(message: Record<string, unknown>, signatureVersion = "2", key = privateKey): Record<string, unknown> {
 	const unsigned = { SigningCertURL: CERT_URL, ...message, SignatureVersion: signatureVersion };
 	const algorithm = signatureVersion === "1" ? "RSA-SHA1" : "RSA-SHA256";
 	const signature = crypto
 		.createSign(algorithm)
-		.update(buildSigningString(unsigned))
+		.update(buildSigningString(unsigned) as string)
 		.sign(key, "base64");
 	return { ...unsigned, Signature: signature };
 }
 
 function createTestVerifier() {
-	const requests = [];
+	const requests: string[] = [];
 	const verify = createSnsVerifier({
 		fetchCertificate: async (url) => {
 			requests.push(url);
-			return publicKeyPem;
+			return publicKeyPem as string;
 		},
 	});
 	return { verify, requests };
 }
 
 test("the signing string follows the AWS format for each message type", () => {
-	const lines = (keys, message) => keys.flatMap((key) => [key, message[key]]).concat("").join("\n");
+	const lines = (keys: string[], message: Record<string, unknown>) => keys.flatMap((key) => [key, message[key]]).concat("").join("\n");
 
 	assert.equal(
 		buildSigningString(notification),
 		lines(["Message", "MessageId", "Subject", "Timestamp", "TopicArn", "Type"], notification)
 	);
 	const withoutSubject = { ...notification };
-	delete withoutSubject.Subject;
+	delete (withoutSubject as Record<string, unknown>).Subject;
 	assert.equal(
 		buildSigningString(withoutSubject),
 		lines(["Message", "MessageId", "Timestamp", "TopicArn", "Type"], withoutSubject)
@@ -86,7 +86,7 @@ test("the signing string follows the AWS format for each message type", () => {
 test("signature versions 1 (SHA1) and 2 (SHA256) verify", async () => {
 	const { verify } = createTestVerifier();
 	const withoutSubject = { ...notification };
-	delete withoutSubject.Subject;
+	delete (withoutSubject as Record<string, unknown>).Subject;
 
 	assert.equal(await verify(signMessage(notification, "1")), true);
 	assert.equal(await verify(signMessage(notification, "2")), true);
@@ -101,7 +101,7 @@ test("tampered, forged, and malformed messages are rejected", async () => {
 	const otherKey = crypto.generateKeyPairSync("rsa", { modulusLength: 2048 }).privateKey;
 
 	const rejected = [
-		{ ...signed, Message: signed.Message.replace("Delivery", "Bounce") },
+		{ ...signed, Message: (signed as { Message: string }).Message.replace("Delivery", "Bounce") },
 		{ ...signed, TopicArn: `${TOPIC_ARN}-other` },
 		{ ...signed, Subject: "Changed" },
 		{ ...signed, Type: "SubscriptionConfirmation" },
@@ -116,7 +116,7 @@ test("tampered, forged, and malformed messages are rejected", async () => {
 		null,
 		"text",
 	];
-	for (const message of rejected) assert.equal(await verify(message), false);
+	for (const message of rejected) assert.equal(await verify(message as never), false);
 });
 
 test("certificates are only fetched from https://sns.<region>.amazonaws.com/SimpleNotificationService-*.pem", async () => {
@@ -171,7 +171,7 @@ test("certificates are cached per URL and failed downloads are retried", async (
 		fetchCertificate: async () => {
 			calls++;
 			if (calls === 1) throw new Error("network down");
-			return publicKeyPem;
+			return publicKeyPem as string;
 		},
 	});
 	const signed = signMessage(notification);

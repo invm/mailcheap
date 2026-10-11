@@ -12,7 +12,7 @@ const WEEKLY = [
 	"2026-08-18T13:00:00Z", // Tue
 ];
 
-function times(suggestions) {
+function times(suggestions: ReturnType<typeof getScheduleSuggestions>) {
 	return suggestions.map(({ at }) => at.toISOString());
 }
 
@@ -24,9 +24,9 @@ test("past send times come back as the next time that weekday and hour come arou
 		"2026-10-12T13:00:00.000Z",
 	]);
 	const lastIssue = suggestions.find(({ isLastIssue }) => isLastIssue);
-	assert.equal(lastIssue.at.toISOString(), "2026-10-07T13:00:00.000Z");
-	assert.equal(lastIssue.uses, 2);
-	assert.equal(lastIssue.lastUsedAt.toISOString(), "2026-09-30T13:00:00.000Z");
+	assert.equal(lastIssue!.at.toISOString(), "2026-10-07T13:00:00.000Z");
+	assert.equal(lastIssue!.uses, 2);
+	assert.equal(lastIssue!.lastUsedAt.toISOString(), "2026-09-30T13:00:00.000Z");
 });
 
 test("send-now times round to the quarter hour", () => {

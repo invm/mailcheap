@@ -53,9 +53,9 @@ test("archive links use the newsletter's domain once it routes here", () => {
 });
 
 test("social links are recognized by their domain", () => {
-	assert.equal(getSocialPlatform("https://twitter.com/example").id, "x");
-	assert.equal(getSocialPlatform("https://www.linkedin.com/in/example/").id, "linkedin");
-	assert.equal(getSocialPlatform("https://m.youtube.com/@example").id, "youtube");
+	assert.equal(getSocialPlatform("https://twitter.com/example")!.id, "x");
+	assert.equal(getSocialPlatform("https://www.linkedin.com/in/example/")!.id, "linkedin");
+	assert.equal(getSocialPlatform("https://m.youtube.com/@example")!.id, "youtube");
 	assert.deepEqual(getSocialPlatform("https://www.example.com"), {
 		id: "website",
 		label: "example.com",
@@ -68,9 +68,9 @@ test("social links are one https link per line", () => {
 	assert.deepEqual(parseSocialLinks(" https://x.com/example\n\nhttps://x.com/example https://youtube.com/@example "), {
 		links: ["https://x.com/example", "https://youtube.com/@example"],
 	});
-	assert.match(parseSocialLinks("http://x.com/example").error, /not an https/);
-	assert.match(parseSocialLinks("javascript:alert(1)").error, /not an https/);
-	assert.match(parseSocialLinks(Array.from({ length: 9 }, (_, i) => `https://a${i}.com`).join("\n")).error, /at most 8/);
+	assert.match((parseSocialLinks("http://x.com/example") as { error: string }).error, /not an https/);
+	assert.match((parseSocialLinks("javascript:alert(1)") as { error: string }).error, /not an https/);
+	assert.match((parseSocialLinks(Array.from({ length: 9 }, (_, i) => `https://a${i}.com`).join("\n")) as { error: string }).error, /at most 8/);
 });
 
 test("share links carry the issue URL", () => {

@@ -47,7 +47,7 @@ test("only well-formed bearer tokens are read", () => {
 		`Bearer sk_${key.slice(3)}`,
 		`Bearer ${key.toUpperCase().replace("MC_", "mc_")}!`,
 	];
-	for (const header of rejected) assert.equal(readBearerToken(header), null, String(header));
+	for (const header of rejected) assert.equal(readBearerToken(header as string | null), null, String(header));
 });
 
 test("lastUsedAt is refreshed at most once per minute", () => {
@@ -56,5 +56,5 @@ test("lastUsedAt is refreshed at most once per minute", () => {
 	assert.equal(shouldTouchLastUsed(null, now), true);
 	assert.equal(shouldTouchLastUsed(new Date(now - 59_000), now), false);
 	assert.equal(shouldTouchLastUsed(new Date(now - 60_000), now), true);
-	assert.equal(shouldTouchLastUsed(new Date(now - 3_600_000).toISOString(), now), true);
+	assert.equal(shouldTouchLastUsed(new Date(now - 3_600_000).toISOString() as unknown as Date, now), true);
 });

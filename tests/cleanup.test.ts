@@ -16,22 +16,22 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const NOW = Date.parse("2027-06-01T12:00:00Z");
 const ON = { enabled: true, issues: 6, days: 180 };
 
-function daysAgo(days) {
+function daysAgo(days: number) {
 	return new Date(NOW - days * DAY_MS);
 }
 
-function contact(id, fields = {}) {
+function contact(id: string, fields: Record<string, unknown> = {}) {
 	return { _id: id, email: `${id}@example.com`, subscribedAt: daysAgo(400), ...fields };
 }
 
 test("cleanup is off by default, and saved numbers win over the defaults", () => {
-	assert.deepEqual(getCleanupSettings({ slug: "weekly" }), { enabled: false, issues: 6, days: 180 });
-	assert.deepEqual(getCleanupSettings({ slug: "weekly", cleanup: { enabled: true, issues: 8, days: 60 } }), {
+	assert.deepEqual(getCleanupSettings({ slug: "weekly" } as never), { enabled: false, issues: 6, days: 180 });
+	assert.deepEqual(getCleanupSettings({ slug: "weekly", cleanup: { enabled: true, issues: 8, days: 60 } } as never), {
 		enabled: true,
 		issues: 8,
 		days: 60,
 	});
-	assert.deepEqual(getCleanupSettings({ slug: "weekly", cleanup: { enabled: "yes", issues: 0, days: null } }), {
+	assert.deepEqual(getCleanupSettings({ slug: "weekly", cleanup: { enabled: "yes", issues: 0, days: null } } as never), {
 		enabled: false,
 		issues: 6,
 		days: 180,
@@ -62,12 +62,12 @@ test("any sign of life counts, and the join date stands in for people who never 
 		assert.equal(getCleanupAction(contact(field, { ...cold, [field]: daysAgo(30) }), ON, NOW), "issue", field);
 		assert.equal(getCleanupAction(contact(field, { ...cold, [field]: daysAgo(200) }), ON, NOW), "lastChance", field);
 	}
-	assert.equal(getLastSignOfLife({ createdAt: daysAgo(10) }), daysAgo(10).getTime(), "no subscribedAt: createdAt");
-	assert.equal(getLastSignOfLife({}), 0);
+	assert.equal(getLastSignOfLife({ createdAt: daysAgo(10) } as never), daysAgo(10).getTime(), "no subscribedAt: createdAt");
+	assert.equal(getLastSignOfLife({} as never), 0);
 });
 
 test("after the last-chance email: skip while waiting, dormant at a send 14 or more days later", () => {
-	const warned = (days, fields = {}) =>
+	const warned = (days: number, fields: Record<string, unknown> = {}) =>
 		contact("w", { ignoredIssues: 6, lastOpenAt: daysAgo(300), lastChanceAt: daysAgo(days), ...fields });
 	assert.equal(getCleanupAction(warned(0), ON, NOW), "waiting");
 	assert.equal(getCleanupAction(warned(LAST_CHANCE_DAYS - 0.01), ON, NOW), "waiting");
@@ -106,29 +106,29 @@ const AUDIENCE = [
 	contact("engaged3", { ignoredIssues: 6, lastOpenAt: daysAgo(100) }),
 ];
 
-function ids(contacts) {
+function ids(contacts: { _id: unknown }[]) {
 	return contacts.map(({ _id }) => _id);
 }
 
 test("the send-time split: the issue, the last-chance email, waiting and dormant", () => {
-	const split = splitAudience(AUDIENCE, { settings: ON, now: NOW });
+	const split = splitAudience(AUDIENCE, { settings: ON, now: NOW } as never);
 	assert.deepEqual(ids(split.issue), ["engaged1", "engaged2", "new1", "engaged3"]);
 	assert.deepEqual(ids(split.lastChance), ["cold1", "cold2"]);
 	assert.deepEqual(ids(split.waiting), ["waiting1"]);
 	assert.deepEqual(ids(split.dormant), ["expired1"]);
 	assert.equal(split.received, 0);
 
-	const off = splitAudience(AUDIENCE, { settings: { ...ON, enabled: false }, now: NOW });
+	const off = splitAudience(AUDIENCE, { settings: { ...ON, enabled: false }, now: NOW } as never);
 	assert.deepEqual(ids(off.issue), ids(AUDIENCE), "switched off: everyone gets the issue");
 });
 
 test("a limit counts issue recipients only and stops the walk there", () => {
-	const split = splitAudience(AUDIENCE, { settings: ON, limit: 2, now: NOW });
+	const split = splitAudience(AUDIENCE, { settings: ON, limit: 2, now: NOW } as never);
 	assert.deepEqual(ids(split.issue), ["engaged1", "engaged2"]);
 	assert.deepEqual(ids(split.lastChance), ["cold1"], "cold2 sits past the limit, left for a later step");
 	assert.deepEqual(ids(split.dormant), []);
 
-	assert.deepEqual(ids(splitAudience(AUDIENCE, { settings: ON, limit: 0, now: NOW }).issue), []);
+	assert.deepEqual(ids(splitAudience(AUDIENCE, { settings: ON, limit: 0, now: NOW } as never).issue), []);
 });
 
 test("a later step skips who already got the issue or the last-chance email, and counts the issue toward the limit", () => {

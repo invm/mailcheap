@@ -38,7 +38,7 @@ test("editor HTML keeps its content and drops scripts, handlers and unfinished u
 });
 
 test("editor issues get inline styles in emails", () => {
-	const { html, text } = renderEmail({ format: "rich", html: editorHtml, subject: "Big news", newsletter: { name: "Field notes" } });
+	const { html, text } = renderEmail({ format: "rich", html: editorHtml, subject: "Big news", newsletter: { name: "Field notes" } as never });
 	assert.equal(html.split("border-radius:12px;background:#f4f4f5;").length - 1, 2);
 	assert.ok(!html.includes("data-callout"));
 	assert.ok(html.includes('<li><p style="margin:0;">One</p></li>'));

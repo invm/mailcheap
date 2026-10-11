@@ -14,15 +14,15 @@ const MAX_MS = 200;
 // of HTML to sanitize.
 const MAX_MARKDOWN_MS = 2000;
 
-function repeat(unit) {
+function repeat(unit: string) {
 	return unit.repeat(Math.floor(SIZE / unit.length));
 }
 
-function nested(depth) {
+function nested(depth: number) {
 	return `${"<scr".repeat(depth)}<script>alert(1)</script>${"ipt>".repeat(depth)}`;
 }
 
-function seededRandom(seed) {
+function seededRandom(seed: number) {
 	let state = seed;
 	return () => {
 		state = (state * 1103515245 + 12345) & 0x7fffffff;
@@ -34,10 +34,10 @@ const PIECES = ["<", ">", "</", "<!--", "-->", "<script", "</script>", "<scr", "
 	"<head ", "<body ", "<div ", '<div id="web-header">', "</div>", "<a ", '<a href="', "</a>", "<img ", ' src="https://x.test/a.png"',
 	"<p>", "</p>", " data-email-only", " data-preheader", "=", '"', "'", " ", "\n", "x", "*a", "_", "[", "](", "`", "> ", ":::box\n"];
 
-function tagSoup(seed) {
+function tagSoup(seed: number) {
 	const random = seededRandom(seed);
-	const pieces = [];
-	for (let length = 0; length < SIZE; length += pieces.at(-1).length) pieces.push(PIECES[Math.floor(random() * PIECES.length)]);
+	const pieces: string[] = [];
+	for (let length = 0; length < SIZE; length += pieces.at(-1)!.length) pieces.push(PIECES[Math.floor(random() * PIECES.length)]);
 	return pieces.join("");
 }
 
@@ -71,20 +71,20 @@ const MARKDOWN_SHAPES = {
 	"tag soup 1": SHAPES["tag soup 1"],
 };
 
-function timed(run) {
+function timed<T>(run: () => T) {
 	const startedAt = performance.now();
 	const result = run();
 	return { result, ms: performance.now() - startedAt };
 }
 
-function assertNoUnsafeTags(html, label) {
+function assertNoUnsafeTags(html: string, label: string) {
 	assert.doesNotMatch(html, /<\/?(script|style|svg|iframe|form|button|noscript|link)\b|<!--/i, label);
 }
 
 // Warms up the regex engine and marked, which the first call would otherwise pay for.
 test.before(() => {
 	renderIssueBody({ format: "rich", html: tagSoup(9).slice(0, 20_000) });
-	renderIssueBody({ format: "markdown", markdown: tagSoup(9).slice(0, 20_000) });
+	renderIssueBody({ format: "markdown", markdown: tagSoup(9).slice(0, 20_000) } as never);
 });
 
 for (const [label, html] of Object.entries(SHAPES)) {
@@ -110,7 +110,7 @@ for (const [label, html] of Object.entries(SHAPES)) {
 for (const [label, markdown] of Object.entries(MARKDOWN_SHAPES)) {
 	test(`Markdown "${label}" (500 KB) renders in linear time`, (t) => {
 		t.mock.method(console, "error", () => {});
-		const { result, ms } = timed(() => renderIssueBody({ format: "markdown", markdown }));
+		const { result, ms } = timed(() => renderIssueBody({ format: "markdown", markdown } as never));
 		assert.ok(ms < MAX_MARKDOWN_MS, `${label}: ${Math.round(ms)} ms`);
 		assertNoUnsafeTags(result.html, label);
 		assert.ok(timed(() => firstImageUrl({ format: "markdown", markdown })).ms < MAX_MS, label);

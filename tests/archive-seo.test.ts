@@ -67,7 +67,7 @@ test("issues describe themselves as blog posts for search engines", () => {
 		image: "https://mailcheap.test/logos/field-notes.webp",
 		sameAs: newsletter.socialLinks,
 	});
-	assert.equal(jsonLd.publisher.logo.url, "https://mailcheap.test/logos/field-notes.webp");
+	assert.equal(jsonLd.publisher.logo!.url, "https://mailcheap.test/logos/field-notes.webp");
 });
 
 test("the author page is a profile with the photo, bio and social profiles", () => {

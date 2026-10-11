@@ -14,13 +14,13 @@ const contactId = "64f1a2b3c4d5e6f7a8b9c0d1";
 const otherContactId = "64f1a2b3c4d5e6f7a8b9c0d9";
 const newsletterId = "74f1a2b3c4d5e6f7a8b9c0d2";
 
-function signLikeServer(json, secret = process.env.SESSION_SECRET) {
-	const key = Buffer.from(crypto.hkdfSync("sha256", secret, "", "mailcheap-unsubscribe-v1", 32));
+function signLikeServer(json: string, secret = process.env.SESSION_SECRET) {
+	const key = Buffer.from(crypto.hkdfSync("sha256", secret!, "", "mailcheap-unsubscribe-v1", 32));
 	const payload = Buffer.from(json).toString("base64url");
 	return `${payload}.${crypto.createHmac("sha256", key).update(payload).digest("base64url")}`;
 }
 
-function withSecret(secret, callback) {
+function withSecret(secret: string | undefined, callback: () => unknown) {
 	const original = process.env.SESSION_SECRET;
 	if (secret === undefined) delete process.env.SESSION_SECRET;
 	else process.env.SESSION_SECRET = secret;
@@ -120,14 +120,14 @@ test("prototype keys never satisfy the payload checks", () => {
 	const nested = signLikeServer(`{"__proto__":{"c":"${contactId}","n":"${newsletterId}"}}`);
 	assert.equal(verifyUnsubscribeToken(nested), null);
 
-	Object.prototype.c = contactId;
-	Object.prototype.n = newsletterId;
+	(Object.prototype as Record<string, unknown>).c = contactId;
+	(Object.prototype as Record<string, unknown>).n = newsletterId;
 	try {
 		assert.equal(verifyUnsubscribeToken(signLikeServer("{}")), null);
 		assert.equal(verifyUnsubscribeToken(signLikeServer(`{"c":"${contactId}"}`)), null);
 	} finally {
-		delete Object.prototype.c;
-		delete Object.prototype.n;
+		delete (Object.prototype as Record<string, unknown>).c;
+		delete (Object.prototype as Record<string, unknown>).n;
 	}
 });
 

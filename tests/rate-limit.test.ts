@@ -7,7 +7,7 @@ delete process.env.UPSTASH_REDIS_REST_TOKEN;
 
 const LOGIN = { name: "test-login", limit: 3, window: "15 m" };
 
-async function countAllowed(options, attempts, limiter) {
+async function countAllowed(options: Parameters<typeof isRateLimited>[0], attempts: number, limiter?: any) {
 	let allowed = 0;
 	for (let attempt = 0; attempt < attempts; attempt += 1) if (!(await isRateLimited(options, limiter))) allowed += 1;
 	return allowed;
@@ -28,7 +28,7 @@ test("a Redis error or timeout falls back to memory instead of letting everythin
 	assert.equal(await countAllowed({ ...LOGIN, key: "198.51.100.3" }, 5, failing), 3);
 	assert.equal(await countAllowed({ ...LOGIN, key: "198.51.100.4" }, 5, timingOut), 3);
 
-	const reports = console.error.mock.calls.filter(({ arguments: [message] }) => /unavailable, counting in memory/.test(message));
+	const reports = (console.error as any).mock.calls.filter(({ arguments: [message] }: any) => /unavailable, counting in memory/.test(message));
 	assert.equal(reports.length, 1, "an outage is reported at most every 30 minutes, not on every request");
 });
 
