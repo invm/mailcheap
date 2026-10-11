@@ -1,3 +1,5 @@
+import type { NextConfig } from "next";
+
 // No script-src: Next.js's inline scripts would need per-request nonces, which archive pages can't have
 // while they're cached (ISR). script-src-attr still blocks inline event handlers everywhere.
 const CONTENT_SECURITY_POLICY = [
@@ -16,8 +18,7 @@ const SECURITY_HEADERS = [
 	{ key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
 ];
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
 	poweredByHeader: false,
 	images: {
 		remotePatterns: [{ protocol: "https", hostname: "*.public.blob.vercel-storage.com" }],

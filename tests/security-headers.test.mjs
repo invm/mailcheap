@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import nextConfig from "../next.config.mjs";
+import nextConfig from "../next.config.ts";
 import { formatActivity } from "../lib/activity.js";
 
 async function getHeaders() {

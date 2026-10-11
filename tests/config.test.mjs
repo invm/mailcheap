@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { getConfigProblems } from "../lib/config.js";
-import { register } from "../instrumentation.js";
+import { register } from "../instrumentation.ts";
 
 const STRONG = { SESSION_SECRET: "s".repeat(32), ADMIN_PASSWORD: "p".repeat(12) };
 

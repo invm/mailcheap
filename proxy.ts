@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getArchiveHostUrl, getArchiveSlugForHost } from "@/lib/archive-hosts";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session-token";
 
@@ -27,13 +27,13 @@ const AUTHOR_PATH_PATTERN = /^\/authors\/([a-z0-9][a-z0-9-]{0,59})\/?$/;
 // Generated share images stay on the app domain, where social cards point: they're only PNGs.
 const ARCHIVE_IMAGE_PATH_PATTERN = /^\/archive\/[^/]+\/og$/;
 
-function rewriteTo(request, pathname) {
+function rewriteTo(request: NextRequest, pathname: string) {
 	const url = request.nextUrl.clone();
 	url.pathname = pathname;
 	return NextResponse.rewrite(url);
 }
 
-export async function proxy(request) {
+export async function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 
 	const archiveSlug = getArchiveSlugForHost(request.headers.get("host"));
