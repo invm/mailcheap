@@ -6,7 +6,7 @@ import {
 	normalizeRate,
 	normalizeStatus,
 	sanitizeImportRow,
-} from "../lib/csv-import.js";
+} from "../lib/csv-import.ts";
 
 test("maps common export headers", () => {
 	const columns = mapColumns(["Email", "Status", "Created At", "Open Rate", "Click Through Rate"]);

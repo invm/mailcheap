@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { faviconUrl, rootDomain } from "../lib/favicon.js";
+import { faviconUrl, rootDomain } from "../lib/favicon.ts";
 
 test("root domains come from hosts and email addresses", () => {
 	assert.equal(rootDomain("mail.example.com"), "example.com");

@@ -6,11 +6,11 @@ process.env.SESSION_SECRET = "s".repeat(40);
 process.env.ADMIN_EMAIL = "admin@example.com";
 process.env.ADMIN_PASSWORD = "correct horse battery staple";
 
-const { SESSION_COOKIE, SESSION_MAX_AGE, signSessionToken, verifySessionToken } = await import("../lib/session-token.js");
-const { createUnsubscribeToken } = await import("../lib/unsubscribe.js");
-const { getClickUrl, getOpenUrl } = await import("../lib/tracking.js");
-const { createConfirmToken } = await import("../lib/confirmation.js");
-const { createKeepToken } = await import("../lib/last-chance.js");
+const { SESSION_COOKIE, SESSION_MAX_AGE, signSessionToken, verifySessionToken } = await import("../lib/session-token.ts");
+const { createUnsubscribeToken } = await import("../lib/unsubscribe.ts");
+const { getClickUrl, getOpenUrl } = await import("../lib/tracking.ts");
+const { createConfirmToken } = await import("../lib/confirmation.ts");
+const { createKeepToken } = await import("../lib/last-chance.ts");
 
 async function withEnv(values, run) {
 	const previous = Object.fromEntries(Object.keys(values).map((key) => [key, process.env[key]]));
@@ -94,7 +94,7 @@ test("email links keep their signatures", () => {
 test("production keeps the session in a __Host- cookie", async () => {
 	assert.equal(SESSION_COOKIE, "mailcheap_session");
 	await withEnv({ NODE_ENV: "production" }, async () => {
-		const production = await import("../lib/session-token.js?production");
+		const production = await import("../lib/session-token.ts?production");
 		assert.equal(production.SESSION_COOKIE, "__Host-mailcheap_session");
 	});
 });

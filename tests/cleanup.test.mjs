@@ -10,7 +10,7 @@ import {
 	splitAudience,
 	summarizePreview,
 	withEngagement,
-} from "../lib/cleanup.js";
+} from "../lib/cleanup.ts";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const NOW = Date.parse("2027-06-01T12:00:00Z");

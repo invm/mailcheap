@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { isLimitedInMemory, isRateLimited } from "../lib/rate-limit.js";
+import { isLimitedInMemory, isRateLimited } from "../lib/rate-limit.ts";
 
 delete process.env.UPSTASH_REDIS_REST_URL;
 delete process.env.UPSTASH_REDIS_REST_TOKEN;

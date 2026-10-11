@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { isObjectIdString, isPlainObject, normalizeEmail } from "../lib/validation.js";
+import { isObjectIdString, isPlainObject, normalizeEmail } from "../lib/validation.ts";
 
 test("emails are trimmed and lowercased", () => {
 	const accepted = [

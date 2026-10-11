@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { getContactWrites, getStatusChanges } from "../lib/contact-import.js";
+import { getContactWrites, getStatusChanges } from "../lib/contact-import.ts";
 
 const newsletterId = "74f1a2b3c4d5e6f7a8b9c0d2";
 const subscribedAt = new Date("2026-10-08T09:00:00.000Z");

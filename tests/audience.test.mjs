@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { buildAudienceQuery, selectAudience } from "../lib/audience.js";
+import { buildAudienceQuery, selectAudience } from "../lib/audience.ts";
 
 const newsletterId = "74f1a2b3c4d5e6f7a8b9c0d2";
 

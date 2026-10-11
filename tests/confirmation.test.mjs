@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { CONFIRM_URL_PLACEHOLDER, getConfirmationContent, getConfirmationProblem } from "../lib/confirmation-content.js";
-import { createConfirmToken, verifyConfirmToken } from "../lib/confirmation.js";
-import { getInbox } from "../lib/inbox-links.js";
-import { renderEmail } from "../lib/render-email.js";
-import { buildRecipientEmail, getWelcomeContent } from "../lib/sending-rules.js";
-import { createUnsubscribeToken, verifyUnsubscribeToken } from "../lib/unsubscribe.js";
+import { CONFIRM_URL_PLACEHOLDER, getConfirmationContent, getConfirmationProblem } from "../lib/confirmation-content.ts";
+import { createConfirmToken, verifyConfirmToken } from "../lib/confirmation.ts";
+import { getInbox } from "../lib/inbox-links.ts";
+import { renderEmail } from "../lib/render-email.ts";
+import { buildRecipientEmail, getWelcomeContent } from "../lib/sending-rules.ts";
+import { createUnsubscribeToken, verifyUnsubscribeToken } from "../lib/unsubscribe.ts";
 
 process.env.SESSION_SECRET ||= "test-secret-for-confirmation-links";
 process.env.APP_URL ||= "https://mailcheap.test";

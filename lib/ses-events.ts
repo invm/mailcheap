@@ -1,0 +1,146 @@
+import "server-only";
+import { sendAlert } from "@/lib/alerts";
+import { withEngagement } from "@/lib/cleanup";
+import { connectDb } from "@/lib/db";
+import { CAMPAIGN_MESSAGE_KINDS, getCampaignStatsPath } from "@/lib/sending-rules";
+import type { SesEventPlan, SesEventSuppression } from "@/lib/ses-event-mapping";
+import { getSesEventPlan, getTrackingPlan } from "@/lib/ses-event-mapping";
+import { isLikelyScanner } from "@/lib/tracking";
+import Campaign from "@/models/Campaign";
+import Contact from "@/models/Contact";
+import Event from "@/models/Event";
+import Message from "@/models/Message";
+import Suppression from "@/models/Suppression";
+
+export { getSesEventPlan } from "@/lib/ses-event-mapping";
+
+// Every send produces a delivery event; storing those raw would fill a small cluster within months.
+const RECORDED_EVENT_TYPES = new Set(["Bounce", "Complaint", "Reject", "DeliveryDelay", "RenderingFailure"]);
+
+type LeanMessage = { _id: unknown; kind: string; campaignId?: unknown; contactId?: unknown; email: string; sesMessageId?: string | null; sentAt?: Date | null };
+type ApplyPlan = Pick<SesEventPlan, "firsts" | "status" | "error" | "engagement" | "occurredAt">;
+
+// The message_id tag covers events that arrive before sesMessageId is saved.
+async function findMessage({ sesMessageId, messageId }: { sesMessageId: string | null; messageId: string | null }) {
+	if (sesMessageId) {
+		const message = await Message.findOne({ sesMessageId }).lean();
+		if (message) return message;
+	}
+	if (!messageId) return null;
+
+	const message = await Message.findById(messageId).lean();
+	if (!message) return null;
+	if (message.sesMessageId && sesMessageId && message.sesMessageId !== sesMessageId) return null;
+	if (!message.sesMessageId && sesMessageId) {
+		await Message.updateOne({ _id: message._id, sesMessageId: null }, { $set: { sesMessageId } });
+	}
+	return message;
+}
+
+// Each counter moves only on the first transition, so SNS redeliveries are harmless.
+async function applyMessageUpdates(message: LeanMessage, plan: ApplyPlan): Promise<void> {
+	const campaignInc: Record<string, number> = {};
+	const contactInc: Record<string, number> = {};
+	const statsPath = getCampaignStatsPath(message.kind);
+
+	for (const { field, stat, contactStat } of plan.firsts) {
+		const { matchedCount } = await Message.updateOne(
+			{ _id: message._id as any, [field]: null } as any,
+			{ $set: { [field]: plan.occurredAt } }
+		);
+		if (!matchedCount) continue;
+		if (stat) campaignInc[`${statsPath}.${stat}`] = 1;
+		if (contactStat) contactInc[`stats.${contactStat}`] = 1;
+	}
+
+	if (plan.status) {
+		const { matchedCount } = await Message.updateOne(
+			{ _id: message._id as any, status: { $in: plan.status.from } } as any,
+			{ $set: { status: plan.status.to } }
+		);
+		if (matchedCount && plan.status.stat) campaignInc[`${statsPath}.${plan.status.stat}`] = 1;
+	}
+
+	if (plan.error) {
+		await Message.updateOne({ _id: message._id as any } as any, { $set: { error: plan.error.slice(0, 500) } });
+	}
+
+	const updates: Promise<unknown>[] = [];
+	if (CAMPAIGN_MESSAGE_KINDS.includes(message.kind) && message.campaignId && Object.keys(campaignInc).length > 0) {
+		updates.push(Campaign.updateOne({ _id: message.campaignId as any } as any, { $inc: campaignInc }));
+	}
+	if (message.contactId && (plan.engagement || Object.keys(contactInc).length > 0)) {
+		const update = {
+			...(plan.engagement && { $max: plan.engagement }),
+			...(Object.keys(contactInc).length > 0 && { $inc: contactInc }),
+		};
+		updates.push(
+			Contact.updateOne(
+				{ _id: message.contactId as any } as any,
+				plan.engagement ? withEngagement(update, plan.occurredAt) : update
+			)
+		);
+	}
+	await Promise.all(updates);
+}
+
+// Global: the address is never emailed again, from any newsletter.
+async function suppress({ emails, reason, detail, contactStatus, contactStatusFrom }: SesEventSuppression): Promise<void> {
+	if (emails.length === 0) return;
+	await Promise.all(
+		emails.map((email) =>
+			Suppression.updateOne(
+				{ email },
+				// A complaint outranks an earlier bounce or manual suppression.
+				reason === "complaint"
+					? { $set: { reason, detail } }
+					: { $setOnInsert: { reason, detail } },
+				{ upsert: true }
+			)
+		)
+	);
+	await Contact.updateMany(
+		{ email: { $in: emails }, status: { $in: contactStatusFrom } } as any,
+		{ $set: { status: contactStatus } }
+	);
+}
+
+// Mailcheap's own open pixel and click links update messages the way SES events do.
+export async function recordEngagement({ messageId, type, userAgent }: { messageId: string; type: string; userAgent: string }): Promise<void> {
+	await connectDb();
+	const message = await Message.findById(messageId).select("kind campaignId contactId sentAt").lean();
+	if (!message) return;
+	if (type === "Click" && isLikelyScanner({ userAgent, sentAt: message.sentAt })) return;
+	await applyMessageUpdates(message, getTrackingPlan(type));
+}
+
+export async function handleSesEvent(sesEvent: Record<string, unknown>) {
+	const plan = getSesEventPlan(sesEvent);
+	if (!plan) return { handled: false };
+
+	await connectDb();
+	const message = await findMessage(plan);
+	if (message) await applyMessageUpdates(message, plan);
+	if (plan.suppression) await suppress(plan.suppression);
+	if (plan.suppression?.reason === "complaint") {
+		await sendAlert({
+			key: "complaints",
+			title: "Spam complaint",
+			detail: `${plan.suppression.emails.join(", ")} marked an email as spam. Contacts are suppressed.`,
+			path: message?.campaignId ? `/campaigns/${message.campaignId}` : "",
+		});
+	}
+
+	if (RECORDED_EVENT_TYPES.has(plan.type)) {
+		await Event.create({
+			type: plan.type,
+			sesMessageId: plan.sesMessageId,
+			messageId: message?._id,
+			campaignId: message?.campaignId,
+			email: plan.email ?? message?.email,
+			occurredAt: plan.occurredAt,
+			data: plan.data,
+		});
+	}
+	return { handled: true, messageId: message ? String(message._id) : null };
+}

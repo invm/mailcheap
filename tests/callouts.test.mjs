@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { renderIssueBody } from "../lib/archive-content.js";
-import { cleanRichHtml } from "../lib/clean-html.js";
-import { renderEmail } from "../lib/render-email.js";
+import { renderIssueBody } from "../lib/archive-content.ts";
+import { cleanRichHtml } from "../lib/clean-html.ts";
+import { renderEmail } from "../lib/render-email.ts";
 
 test("editor boxes keep only their marker, other divs become plain layout", () => {
 	const html = cleanRichHtml(`<div data-callout="" style="background:#fff8e6"><p>Update</p></div>

@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { renderIssueBody } from "../lib/archive-content.js";
-import { cleanRichHtml, removeUnsafeElements } from "../lib/clean-html.js";
-import { markdownToHtml } from "../lib/markdown.js";
-import { htmlToText } from "../lib/render-email.js";
-import { firstImageUrl } from "../lib/thumbnail.js";
+import { renderIssueBody } from "../lib/archive-content.ts";
+import { cleanRichHtml, removeUnsafeElements } from "../lib/clean-html.ts";
+import { markdownToHtml } from "../lib/markdown.ts";
+import { htmlToText } from "../lib/render-email.ts";
+import { firstImageUrl } from "../lib/thumbnail.ts";
 
 // Bodies as large as the API and the editor accept. Before, the first two took 6 s at 192 KB and 12 s
 // at 384 KB, and some Markdown shapes took minutes.

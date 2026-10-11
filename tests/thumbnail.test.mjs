@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { formatRate } from "../lib/format.js";
-import { firstImageUrl, isOptimizableImage } from "../lib/thumbnail.js";
+import { formatRate } from "../lib/format.ts";
+import { firstImageUrl, isOptimizableImage } from "../lib/thumbnail.ts";
 
 test("only local and Blob pictures go through Next's resizer", () => {
 	assert.equal(isOptimizableImage("/authors/jane.jpg"), true);

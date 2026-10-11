@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { renderIssueBody } from "../lib/archive-content.js";
-import { CONTENT_TAGS, cleanRichHtml, keepContentAttributes } from "../lib/clean-html.js";
+import { renderIssueBody } from "../lib/archive-content.ts";
+import { CONTENT_TAGS, cleanRichHtml, keepContentAttributes } from "../lib/clean-html.ts";
 
 const payloads = {
 	audit: '<x_ style="position:fixed;inset:0" onpointerover="alert(document.domain)"></x_>',

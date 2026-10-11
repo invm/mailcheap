@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { renderIssueBody } from "../lib/archive-content.js";
-import { cleanRichHtml } from "../lib/clean-html.js";
+import { renderIssueBody } from "../lib/archive-content.ts";
+import { cleanRichHtml } from "../lib/clean-html.ts";
 
 const rich = `<p style="color:#2D2D2D" class="lead">Hello <b>world</b> <a class="link" href="https://example.com?utm_source=x&amp;a=1" target="_blank" rel="noopener" style="color:blue">Example</a> <a href="javascript:alert(1)">bad</a></p>
 <h2 id="chapter-1" style="font-size:24px">Chapter 1</h2>

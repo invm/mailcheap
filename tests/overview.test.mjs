@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { linePath, niceScale } from "../lib/charts.js";
-import { formatChange, formatHour, formatSigned } from "../lib/format.js";
+import { linePath, niceScale } from "../lib/charts.ts";
+import { formatChange, formatHour, formatSigned } from "../lib/format.ts";
 import {
 	buildHourlySeries,
 	buildSubscriberSeries,
@@ -9,7 +9,7 @@ import {
 	compareRate,
 	periodDayKeys,
 	splitPeriods,
-} from "../lib/overview-series.js";
+} from "../lib/overview-series.ts";
 import {
 	hourIn,
 	resolveTimeZone,
@@ -17,7 +17,7 @@ import {
 	startOfDateKey,
 	timeZoneLabel,
 	toDateKey,
-} from "../lib/time-zone.js";
+} from "../lib/time-zone.ts";
 
 test("days and hours follow the timezone, DST included", () => {
 	const lateEvening = new Date("2026-10-07T21:30:00Z");

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { LIMITS } from "../lib/config.js";
-import { UNSUBSCRIBE_PLACEHOLDER } from "../lib/render-email.js";
+import { LIMITS } from "../lib/config.ts";
+import { UNSUBSCRIBE_PLACEHOLDER } from "../lib/render-email.ts";
 import {
 	buildRecipientEmail,
 	chunk,
@@ -12,8 +12,8 @@ import {
 	getSendErrorAction,
 	getSendProblem,
 	getWelcomeContent,
-} from "../lib/sending-rules.js";
-import { verifyUnsubscribeToken } from "../lib/unsubscribe.js";
+} from "../lib/sending-rules.ts";
+import { verifyUnsubscribeToken } from "../lib/unsubscribe.ts";
 
 process.env.SESSION_SECRET = "test-session-secret-with-at-least-32-characters";
 process.env.APP_URL = "https://mail.example.com";

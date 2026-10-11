@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { createConfirmToken, verifyConfirmToken } from "../lib/confirmation.js";
-import { createKeepToken, getKeepUrl, verifyKeepToken } from "../lib/last-chance.js";
-import { KEEP_URL_PLACEHOLDER, getLastChanceContent } from "../lib/last-chance-content.js";
-import { buildRecipientEmail, getCampaignPauseReason, getCampaignStatsPath } from "../lib/sending-rules.js";
-import { createUnsubscribeToken, verifyUnsubscribeToken } from "../lib/unsubscribe.js";
+import { createConfirmToken, verifyConfirmToken } from "../lib/confirmation.ts";
+import { createKeepToken, getKeepUrl, verifyKeepToken } from "../lib/last-chance.ts";
+import { KEEP_URL_PLACEHOLDER, getLastChanceContent } from "../lib/last-chance-content.ts";
+import { buildRecipientEmail, getCampaignPauseReason, getCampaignStatsPath } from "../lib/sending-rules.ts";
+import { createUnsubscribeToken, verifyUnsubscribeToken } from "../lib/unsubscribe.ts";
 
 process.env.SESSION_SECRET ||= "test-secret-for-last-chance-links";
 process.env.APP_URL ||= "https://mailcheap.test";

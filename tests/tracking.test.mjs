@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { getTrackingPlan } from "../lib/ses-event-mapping.js";
-import { buildRecipientEmail } from "../lib/sending-rules.js";
-import { addTracking, getClickUrl, getOpenUrl, isLikelyScanner, readClickToken, readOpenToken } from "../lib/tracking.js";
+import { getTrackingPlan } from "../lib/ses-event-mapping.ts";
+import { buildRecipientEmail } from "../lib/sending-rules.ts";
+import { addTracking, getClickUrl, getOpenUrl, isLikelyScanner, readClickToken, readOpenToken } from "../lib/tracking.ts";
 
 process.env.SESSION_SECRET = "test-session-secret-with-at-least-32-characters";
 process.env.APP_URL = "https://mail.example.com";

@@ -6,7 +6,7 @@ import {
 	hashApiKey,
 	readBearerToken,
 	shouldTouchLastUsed,
-} from "../lib/api-key-tokens.js";
+} from "../lib/api-key-tokens.ts";
 
 test("generated keys carry 32 random bytes, a display prefix, and their SHA-256 hash", () => {
 	const { key, prefix, hash } = generateApiKey();

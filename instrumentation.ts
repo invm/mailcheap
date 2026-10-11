@@ -1,4 +1,4 @@
-import { getConfigProblems } from "./lib/config.js";
+import { getConfigProblems } from "./lib/config.ts";
 
 // Runs once when a server starts, before it takes requests. Builds skip it, so they need no secrets.
 export function register() {

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { getPresendChecks } from "../lib/presend-checks.js";
-import { UNSUBSCRIBE_PLACEHOLDER, renderEmail } from "../lib/render-email.js";
+import { getPresendChecks } from "../lib/presend-checks.ts";
+import { UNSUBSCRIBE_PLACEHOLDER, renderEmail } from "../lib/render-email.ts";
 
 const newsletter = { name: "Jane Doe", postalAddress: "1 Main St, Paris" };
 

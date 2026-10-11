@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { getSesEventPlan } from "../lib/ses-event-mapping.js";
+import { getSesEventPlan } from "../lib/ses-event-mapping.ts";
 
 const messageId = "64f1a2b3c4d5e6f7a8b9c0d1";
 const mail = {

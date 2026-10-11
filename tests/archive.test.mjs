@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { getArchiveHostUrl, getArchiveSlugForHost, getArchiveUrls, parseArchiveHosts } from "../lib/archive-hosts.js";
-import { getFeedbackId } from "../lib/sending-rules.js";
-import { getShareLinks, getSocialPlatform, parseSocialLinks } from "../lib/social.js";
+import { getArchiveHostUrl, getArchiveSlugForHost, getArchiveUrls, parseArchiveHosts } from "../lib/archive-hosts.ts";
+import { getFeedbackId } from "../lib/sending-rules.ts";
+import { getShareLinks, getSocialPlatform, parseSocialLinks } from "../lib/social.ts";
 
 test("app-domain archive paths move to the newsletter's own domain when it has one", () => {
 	const value = "news.example.com=weekly,letters.example.org=monthly";

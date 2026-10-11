@@ -6,7 +6,7 @@ import {
 	createSnsVerifier,
 	isValidSigningCertUrl,
 	isValidSubscribeUrl,
-} from "../lib/sns.js";
+} from "../lib/sns.ts";
 
 const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", { modulusLength: 2048 });
 const publicKeyPem = publicKey.export({ type: "spki", format: "pem" });

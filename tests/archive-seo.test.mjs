@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
-import { getAuthorSeo, getHomeSeo, getIssueSeo, getShareImage } from "../lib/archive-seo.js";
+import { getAuthorSeo, getHomeSeo, getIssueSeo, getShareImage } from "../lib/archive-seo.ts";
 
 const APP = "https://mailcheap.test";
 const newsletter = {

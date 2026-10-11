@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { getScheduleProblem, getScheduleSuggestions } from "../lib/schedule.js";
+import { getScheduleProblem, getScheduleSuggestions } from "../lib/schedule.ts";
 
 // Tuesday, Oct 6, 2026, 11:30 UTC.
 const NOW = Date.parse("2026-10-06T11:30:00Z");

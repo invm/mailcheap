@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { renderIssueBody } from "../lib/archive-content.js";
-import { cleanRichHtml } from "../lib/clean-html.js";
-import { UNSUBSCRIBE_PLACEHOLDER, hasContent, renderEmail } from "../lib/render-email.js";
-import { getSendProblem } from "../lib/sending-rules.js";
-import { firstImageUrl } from "../lib/thumbnail.js";
+import { renderIssueBody } from "../lib/archive-content.ts";
+import { cleanRichHtml } from "../lib/clean-html.ts";
+import { UNSUBSCRIBE_PLACEHOLDER, hasContent, renderEmail } from "../lib/render-email.ts";
+import { getSendProblem } from "../lib/sending-rules.ts";
+import { firstImageUrl } from "../lib/thumbnail.ts";
 
 process.env.SESSION_SECRET = "test-session-secret-with-at-least-32-characters";
 process.env.APP_URL = "https://mail.example.com";

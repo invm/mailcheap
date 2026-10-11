@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import nextConfig from "../next.config.ts";
-import { formatActivity } from "../lib/activity.js";
+import { formatActivity } from "../lib/activity.ts";
 
 async function getHeaders() {
 	const [rule] = await nextConfig.headers();
