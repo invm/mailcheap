@@ -1,7 +1,5 @@
 import { LIMITS } from "./config.ts";
 import { UNSUBSCRIBE_PLACEHOLDER, hasContent } from "./render-email.ts";
-import type { CampaignDoc } from "@/models/Campaign";
-import type { NewsletterDoc } from "@/models/Newsletter";
 
 type RenderedEmail = { html: string; bytes: number; text: string };
 
@@ -12,8 +10,8 @@ export function getPresendChecks({
 	isDomainVerified,
 	isSendingEnabled,
 }: {
-	campaign: CampaignDoc & { body?: string };
-	newsletter: NewsletterDoc;
+	campaign: { subject?: string | null; previewText?: string | null; body?: string; testSentAt?: unknown };
+	newsletter: { postalAddress?: string | null };
 	rendered: RenderedEmail;
 	isDomainVerified: boolean;
 	isSendingEnabled: boolean;

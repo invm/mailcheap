@@ -51,7 +51,7 @@ export async function subscribe(_state: unknown, formData: FormData) {
 	if (isSendingEnabled() && (isPending || (created && contact.status === "active"))) {
 		const queue = isPending ? queueConfirmationEmail : queueWelcomeEmail;
 		after(() =>
-			queue({ newsletter, contact: contact as unknown as Parameters<typeof queueConfirmationEmail>[0]["contact"] }).catch((error) =>
+			queue({ newsletter, contact }).catch((error) =>
 				console.error(`[subscribe] Signup email for ${contact._id} failed:`, (error as Error).message)
 			)
 		);

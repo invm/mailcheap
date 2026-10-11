@@ -8,7 +8,7 @@ import { addTracking } from "./tracking.ts";
 import { getUnsubscribeLinks } from "./unsubscribe.ts";
 
 export type CampaignData = { _id?: unknown; subject?: string | null; previewText?: string | null; format?: string | null; markdown?: string | null; html?: string | null; replyTo?: string | null; archiveSlug?: string | null; archiveListed?: boolean | null };
-export type NewsletterData = { _id?: unknown; fromName?: unknown; fromEmail?: string | null; slug?: string | null; archiveEnabled?: boolean | null; replyTo?: string | null };
+export type NewsletterData = { _id?: unknown; name?: string | null; postalAddress?: string | null; fromName?: unknown; fromEmail?: string | null; slug?: string | null; archiveEnabled?: boolean | null; replyTo?: string | null };
 export type ContactData = { _id: unknown; email: string };
 
 export const SEND_BATCH_SIZE = 50;
@@ -84,7 +84,7 @@ export function buildRecipientEmail({ campaign, newsletter, contact, messageId, 
 		html: campaign.html,
 		subject: campaign.subject,
 		previewText: campaign.previewText,
-		newsletter: newsletter as any,
+		newsletter,
 		webUrl: getIssueWebUrl({ campaign, newsletter }),
 	} as Parameters<typeof renderEmail>[0]);
 	const tracked = messageId ? addTracking(rendered.html, { baseUrl: getAppUrl(), messageId }) : rendered.html;

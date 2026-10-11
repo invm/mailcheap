@@ -45,7 +45,7 @@ export { buildRecipientEmail } from "@/lib/sending-rules";
 
 type LeanCampaign = FlattenMaps<CampaignDoc> & { _id: Types.ObjectId };
 type LeanNewsletter = FlattenMaps<NewsletterDoc> & { _id: Types.ObjectId };
-type LeanContact = FlattenMaps<ContactDoc> & { _id: Types.ObjectId };
+export type LeanContact = FlattenMaps<ContactDoc> & { _id: Types.ObjectId };
 type LeanMessage = FlattenMaps<MessageDoc> & { _id: Types.ObjectId };
 
 const QUEUEABLE_STATUSES = ["draft", "scheduled", "paused"];

@@ -2,7 +2,6 @@ import { calloutExtension, inlineCalloutStyles } from "./callouts.ts";
 import { beforeLastTagEnd, cleanRichHtml, replaceElements } from "./clean-html.ts";
 import type { ElementPattern } from "./clean-html.ts";
 import { createMarkdownParser } from "./markdown.ts";
-import type { NewsletterDoc } from "@/models/Newsletter";
 
 export const UNSUBSCRIBE_PLACEHOLDER = "{{unsubscribe_url}}";
 // Generated HTML prints these instead of its own copy, so editing the campaign changes the email too.
@@ -78,7 +77,9 @@ function richEmailBody(html: string): string {
 		);
 }
 
-function footerHtml({ newsletter, unsubscribeUrl }: { newsletter?: NewsletterDoc | null; unsubscribeUrl: string }): string {
+type EmailNewsletter = { name?: string | null; postalAddress?: string | null };
+
+function footerHtml({ newsletter, unsubscribeUrl }: { newsletter?: EmailNewsletter | null; unsubscribeUrl: string }): string {
 	const address = newsletter?.postalAddress
 		? `<br>${escapeHtml(newsletter.postalAddress)}`
 		: "";
@@ -88,7 +89,7 @@ You're receiving this because you subscribed to ${escapeHtml(newsletter?.name ||
 </td></tr>`;
 }
 
-function footerText({ newsletter, unsubscribeUrl }: { newsletter?: NewsletterDoc | null; unsubscribeUrl: string }): string {
+function footerText({ newsletter, unsubscribeUrl }: { newsletter?: EmailNewsletter | null; unsubscribeUrl: string }): string {
 	return [
 		"—",
 		`You're receiving this because you subscribed to ${newsletter?.name || "this newsletter"}.`,
@@ -148,7 +149,7 @@ ${footer}
 }
 
 // Generated HTML (an issue built by another app) keeps its own design and gets the footer appended.
-function withFooter({ html, newsletter, unsubscribeUrl, previewText, webUrl }: { html: string; newsletter?: NewsletterDoc | null; unsubscribeUrl: string; previewText: string | null | undefined; webUrl: string | null }): string {
+function withFooter({ html, newsletter, unsubscribeUrl, previewText, webUrl }: { html: string; newsletter?: EmailNewsletter | null; unsubscribeUrl: string; previewText: string | null | undefined; webUrl: string | null }): string {
 	const footer = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:0 20px 32px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;font-family:${FONT_STACK};">${footerHtml({ newsletter, unsubscribeUrl })}</table></td></tr></table>`;
 	// Its column width is unknown, so the link sits centered above it.
 	const readOnline = webUrl
@@ -174,7 +175,7 @@ type RenderEmailOptions = {
 	html?: string;
 	subject?: string;
 	previewText?: string;
-	newsletter?: NewsletterDoc | null;
+	newsletter?: EmailNewsletter | null;
 	unsubscribeUrl?: string;
 	webUrl?: string | null;
 	isWebVersion?: boolean;

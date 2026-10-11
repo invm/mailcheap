@@ -1,4 +1,5 @@
 import type { NewsletterDoc } from "@/models/Newsletter";
+import type { LeanContact } from "@/lib/sending";
 import { withEngagement } from "@/lib/cleanup";
 import Contact from "@/models/Contact";
 import Newsletter from "@/models/Newsletter";
@@ -39,7 +40,7 @@ export async function upsertContact({ newsletter, email, source, resubscribe }: 
 		{ upsert: true, returnDocument: "after", includeResultMetadata: true }
 	).lean()) as unknown as ModifyLean;
 	const created = !result.lastErrorObject?.updatedExisting;
-	const contact = result.value as Record<string, unknown>;
+	const contact = result.value as LeanContact;
 
 	if (created || !resubscribe || suppression) return { contact, created };
 	// Signing up again is a sign of life, and brings back a contact who left or went dormant.

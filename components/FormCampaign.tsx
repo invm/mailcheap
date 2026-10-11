@@ -90,7 +90,7 @@ export default function FormCampaign({
 		[rendered.html]
 	);
 	const { checks, blocking } = getPresendChecks({
-		campaign: { ...campaign, ...values } as unknown as CampaignDoc & { body?: string },
+		campaign: { ...campaign, ...values },
 		newsletter,
 		rendered,
 		isDomainVerified,
