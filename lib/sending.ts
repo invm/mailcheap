@@ -249,7 +249,7 @@ async function makeDormant(campaignId: unknown, contacts: Array<{ _id: unknown }
 }
 
 async function insertCampaignMessages(campaign: LeanCampaign, newsletter: LeanNewsletter): Promise<void> {
-	const settings = getCleanupSettings(newsletter as any);
+	const settings = getCleanupSettings(newsletter);
 	const { contacts, limit, previous } = await findAudience({ campaign, settings, audienceLimit: campaign.audienceLimit as number | undefined });
 	const now = Date.now();
 	let remaining = limit ?? Infinity;
@@ -270,7 +270,7 @@ export async function getCleanupPreview(campaignId: unknown) {
 	const campaign = await Campaign.findById(campaignId).select({ newsletterId: 1 }).lean();
 	if (!campaign) throw new Error("Campaign not found");
 	const newsletter = await Newsletter.findById(campaign.newsletterId).select({ slug: 1, cleanup: 1 }).lean();
-	const settings = getCleanupSettings(newsletter as any);
+	const settings = getCleanupSettings(newsletter);
 	if (!settings.enabled) return { enabled: false };
 
 	const { contacts, previous } = await findAudience({ campaign, settings });

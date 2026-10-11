@@ -28,7 +28,7 @@ type CampaignRow = {
 	stats: { recipients: number; sent: number; delivered: number; opened: number; clicked: number };
 };
 
-type NewsletterMap = Record<string, { name?: string; imageUrl?: string; slug?: string } | undefined>;
+type NewsletterMap = Record<string, { name?: string; imageUrl?: string | null; slug?: string } | undefined>;
 
 const SCHEDULED_FORMAT: Intl.DateTimeFormatOptions = { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" };
 

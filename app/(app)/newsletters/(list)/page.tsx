@@ -12,7 +12,7 @@ export const metadata = { title: "Newsletters" };
 
 export default async function NewslettersPage() {
 	await connectDb();
-	const newsletters = await (listNewslettersWithActiveCounts as { (): ReturnType<typeof listNewslettersWithActiveCounts> })();
+	const newsletters = await listNewslettersWithActiveCounts();
 
 	return (
 		<>

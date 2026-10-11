@@ -20,13 +20,13 @@ export async function GET(_request: Request, { params }: RouteContext<"/archive/
 
 	const urls = getArchiveUrls(newsletter);
 	const issues = await listArchiveIssues(newsletter._id);
-	const latestDate = getIssueDate(issues[0] as never);
+	const latestDate = getIssueDate(issues[0]);
 	const xml = [
 		'<?xml version="1.0" encoding="UTF-8"?>',
 		'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
 		entry(urls.siteIndex, latestDate),
-		entry(urls.absoluteAuthor(getArchiveAuthor(newsletter as never).slug), latestDate),
-		...issues.map((issue) => entry(urls.absolutePost(issue.archiveSlug!), getIssueDate(issue as never))),
+		entry(urls.absoluteAuthor(getArchiveAuthor(newsletter).slug), latestDate),
+		...issues.map((issue) => entry(urls.absolutePost(issue.archiveSlug!), getIssueDate(issue))),
 		"</urlset>",
 	].join("\n");
 

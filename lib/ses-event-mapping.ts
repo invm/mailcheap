@@ -119,7 +119,7 @@ export function getSesEventPlan(sesEvent: Record<string, unknown>) {
 
 	if (type === "Bounce") {
 		const kind = detail.bounceType === "Permanent" ? "Hard" : "Soft";
-		const reason = [detail.bounceSubType, (detail.bouncedRecipients as any)?.[0]?.diagnosticCode];
+		const reason = [detail.bounceSubType, (detail.bouncedRecipients as Array<{ diagnosticCode?: string }>)?.[0]?.diagnosticCode];
 		plan.error = `${kind} bounce: ${reason.filter(Boolean).join(", ") || "unknown"}`;
 		if (kind === "Hard") {
 			plan.firsts = [{ field: "bouncedAt", stat: "bounced" }];

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-export default function AvatarNewsletter({ newsletter, size = 20, className }: { newsletter?: { imageUrl?: string; name?: string } | null; size?: number; className?: string }) {
+export default function AvatarNewsletter({ newsletter, size = 20, className }: { newsletter?: { imageUrl?: string | null; name?: string } | null; size?: number; className?: string }) {
 	const radius = size >= 32 ? "rounded-lg" : "rounded-[5px]";
 
 	// Files served by the app are resized to the avatar; remote ones are thumbnails already.

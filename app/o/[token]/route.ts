@@ -10,7 +10,7 @@ export async function GET(_request: Request, { params }: RouteContext<"/o/[token
 	const messageId = readOpenToken((await params).token);
 	if (messageId) {
 		after(() =>
-			recordEngagement({ messageId, type: "Open" } as { messageId: string; type: string; userAgent: string }).catch((error) =>
+			recordEngagement({ messageId, type: "Open" }).catch((error) =>
 				console.error("[tracking] Open not recorded:", error)
 			)
 		);

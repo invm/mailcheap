@@ -7,7 +7,7 @@ import CardNotice from "@/components/CardNotice";
 import { Button } from "@/components/ui/button";
 
 // Link scanners open the page without submitting forms, so only a person's browser says yes.
-export default function FormKeep({ token, newsletterName, archiveUrl }: { token: string; newsletterName: string; archiveUrl?: string }) {
+export default function FormKeep({ token, newsletterName, archiveUrl }: { token: string; newsletterName: string; archiveUrl?: string | null }) {
 	const [state, action, isPending] = useActionState(keepSending.bind(null, token), null);
 	const formRef = useRef<HTMLFormElement>(null);
 

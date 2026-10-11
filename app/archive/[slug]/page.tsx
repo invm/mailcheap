@@ -17,7 +17,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
 	const newsletter = await getArchiveNewsletter((await params).slug);
-	return newsletter ? getHomeSeo(newsletter as never).metadata : {};
+	return newsletter ? getHomeSeo(newsletter).metadata : {};
 }
 
 export default async function ArchivePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -26,7 +26,7 @@ export default async function ArchivePage({ params }: { params: Promise<{ slug: 
 
 	const [issues, readers] = await Promise.all([
 		listArchiveIssues(newsletter._id),
-		countReaders(newsletter._id.toString() as never),
+		countReaders(newsletter._id.toString()),
 	]);
 	const urls = getArchiveUrls(newsletter);
 	const pinned = issues.filter((issue) => issue.archivePinned);
@@ -35,12 +35,12 @@ export default async function ArchivePage({ params }: { params: Promise<{ slug: 
 
 	return (
 		<>
-			<ScriptJsonLd data={getHomeSeo(newsletter as never).jsonLd} />
+			<ScriptJsonLd data={getHomeSeo(newsletter).jsonLd} />
 			<section className="relative isolate overflow-hidden">
 				<div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[34rem] bg-dots" />
 				<div className="mx-auto flex max-w-2xl flex-col items-center px-5 pt-16 pb-14 text-center sm:pt-24 sm:pb-20">
 					<AvatarNewsletter
-						newsletter={newsletter as never}
+						newsletter={newsletter}
 						size={72}
 						className="rounded-2xl shadow-[0_8px_24px_-8px_rgb(0_0_0/0.25)] animate-enter"
 					/>
@@ -80,8 +80,8 @@ export default async function ArchivePage({ params }: { params: Promise<{ slug: 
 						{pinned.map((issue, index) => (
 							<li key={issue._id.toString()}>
 								<CardIssue
-									issue={issue as never}
-									newsletter={newsletter as never}
+									issue={issue}
+									newsletter={newsletter}
 									href={urls.post(issue.archiveSlug!)}
 									isEager={index === 0}
 								/>
@@ -95,8 +95,8 @@ export default async function ArchivePage({ params }: { params: Promise<{ slug: 
 				<section style={{ "--stagger": 5 }} className="mx-auto max-w-5xl px-5 animate-enter">
 					<h2 className="mb-4 text-sm font-medium text-muted-foreground">Latest issue</h2>
 					<CardIssue
-						issue={latest as never}
-						newsletter={newsletter as never}
+						issue={latest}
+						newsletter={newsletter}
 						href={urls.post(latest.archiveSlug!)}
 						isFeatured
 						isEager
@@ -112,7 +112,7 @@ export default async function ArchivePage({ params }: { params: Promise<{ slug: 
 					<ol className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
 						{rest.map((issue) => (
 							<li key={issue._id.toString()}>
-								<CardIssue issue={issue as never} newsletter={newsletter as never} href={urls.post(issue.archiveSlug!)} />
+								<CardIssue issue={issue} newsletter={newsletter} href={urls.post(issue.archiveSlug!)} />
 							</li>
 						))}
 					</ol>

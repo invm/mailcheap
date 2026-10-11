@@ -9,21 +9,21 @@ export default async function ArchiveLayout({ children, params }: LayoutProps<"/
 	const newsletter = await getArchiveNewsletter((await params).slug);
 	if (!newsletter) notFound();
 
-	const readers = await countReaders(newsletter._id.toString() as never);
+	const readers = await countReaders(newsletter._id.toString());
 	const { index } = getArchiveUrls(newsletter);
 	const pitch = {
 		name: newsletter.name,
 		slug: newsletter.slug,
-		imageUrl: newsletter.imageUrl as string | undefined,
-		description: newsletter.description as string | undefined,
+		imageUrl: newsletter.imageUrl,
+		description: newsletter.description,
 	};
 
 	return (
-		<ProviderSubscribe newsletter={pitch as never} readers={readers}>
+		<ProviderSubscribe newsletter={pitch} readers={readers}>
 			<div className="flex min-h-dvh flex-col">
-				<HeaderArchive newsletter={newsletter as never} indexHref={index} />
+				<HeaderArchive newsletter={newsletter} indexHref={index} />
 				<main className="flex-1">{children}</main>
-				<FooterArchive newsletter={newsletter as never} indexHref={index} />
+				<FooterArchive newsletter={newsletter} indexHref={index} />
 			</div>
 		</ProviderSubscribe>
 	);

@@ -154,8 +154,10 @@ export async function getSubscriberHistory({ newsletterId, timeZone, now = new D
 	return splitPeriods(buildSubscriberSeries({ dayKeys, baseline, joins, leaves }));
 }
 
-function emptyStats() {
-	return Object.fromEntries(STAT_KEYS.map((key) => [key, 0]));
+export type EmailStats = { sent: number; delivered: number; opened: number; clicked: number; bounced: number; complained: number };
+
+function emptyStats(): EmailStats {
+	return Object.fromEntries(STAT_KEYS.map((key) => [key, 0])) as EmailStats;
 }
 
 // Issues and welcome emails of the last 30 days and the 30 days before.
@@ -183,8 +185,8 @@ export async function getEmailStats({ newsletterId, now = new Date() }: { newsle
 	]);
 
 	const totals = { current: emptyStats(), previous: emptyStats() };
-	for (const row of [...campaignRows, ...welcomeRows] as any[]) {
-		for (const key of STAT_KEYS) totals[row._id as "current" | "previous"][key] += row[key] || 0;
+	for (const row of [...campaignRows, ...welcomeRows]) {
+		for (const key of STAT_KEYS) totals[row._id as "current" | "previous"][key as keyof EmailStats] += row[key] || 0;
 	}
 	return totals;
 }

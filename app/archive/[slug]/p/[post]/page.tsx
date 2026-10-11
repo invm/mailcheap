@@ -14,23 +14,8 @@ import { renderIssueBody } from "@/lib/archive-content";
 import { countReaders, getArchiveIssue, getArchiveNewsletter, listArchiveIssues } from "@/lib/archive-data";
 import { getArchiveUrls } from "@/lib/archive-hosts";
 import { getIssueDate } from "@/lib/archive-issues";
-import type { ArchiveNewsletter } from "@/lib/archive-seo";
 import { getIssueSeo } from "@/lib/archive-seo";
 import { cn } from "@/lib/utils";
-
-type IssueData = {
-	_id: import("mongoose").Types.ObjectId;
-	subject: string;
-	previewText?: string;
-	archiveSlug: string;
-	webViews?: number;
-	format?: string;
-	html: string;
-	markdown?: string;
-	sentAt?: Date;
-	startedAt?: Date;
-	thumbnailUrl?: string;
-};
 
 export const revalidate = 3600;
 
@@ -41,13 +26,13 @@ export function generateStaticParams() {
 async function getIssuePage(params: Promise<{ slug: string; post: string }>) {
 	const { slug, post } = await params;
 	const newsletter = await getArchiveNewsletter(slug);
-	const issue = newsletter && (await getArchiveIssue(newsletter._id.toString() as never, post));
-	return issue ? { newsletter, issue: issue as unknown as IssueData } : null;
+	const issue = newsletter && (await getArchiveIssue(newsletter._id.toString(), post));
+	return issue ? { newsletter, issue } : null;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; post: string }> }) {
 	const page = await getIssuePage(params);
-	return page ? getIssueSeo(page.newsletter as unknown as ArchiveNewsletter, page.issue).metadata : {};
+	return page ? getIssueSeo(page.newsletter, page.issue).metadata : {};
 }
 
 export default async function IssuePage({ params }: { params: Promise<{ slug: string; post: string }> }) {
@@ -57,23 +42,23 @@ export default async function IssuePage({ params }: { params: Promise<{ slug: st
 
 	const [more, readers] = await Promise.all([
 		listArchiveIssues(newsletter._id, { limit: 3, excludeId: issue._id }),
-		countReaders(newsletter._id.toString() as never),
+		countReaders(newsletter._id.toString()),
 	]);
 	const urls = getArchiveUrls(newsletter);
 	const body = renderIssueBody(issue);
 	const date = getIssueDate(issue);
 	const views = issue.webViews ?? 0;
-	const author = getArchiveAuthor(newsletter as never);
+	const author = getArchiveAuthor(newsletter);
 	const pitch = {
 		name: newsletter.name,
 		slug: newsletter.slug,
-		imageUrl: newsletter.imageUrl as string | undefined,
-		description: newsletter.description as string | undefined,
+		imageUrl: newsletter.imageUrl,
+		description: newsletter.description,
 	};
 
 	return (
 		<>
-			<ScriptJsonLd data={getIssueSeo(newsletter as unknown as ArchiveNewsletter, issue).jsonLd} />
+			<ScriptJsonLd data={getIssueSeo(newsletter, issue).jsonLd} />
 			<article className="mx-auto max-w-2xl px-5 pt-12 sm:pt-16">
 				<header className="animate-enter">
 					<h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-[2.75rem] sm:leading-[1.1]">
@@ -120,7 +105,7 @@ export default async function IssuePage({ params }: { params: Promise<{ slug: st
 
 			<section id="subscribe" className={cn("mx-auto max-w-2xl scroll-mt-24 px-5 pt-16", more.length === 0 && "pb-24")}>
 				<div className="rounded-2xl bg-card px-6 py-10 shadow-border sm:px-10">
-					<PitchSubscribe newsletter={pitch as never} readers={readers} />
+					<PitchSubscribe newsletter={pitch} readers={readers} />
 				</div>
 			</section>
 
@@ -138,7 +123,7 @@ export default async function IssuePage({ params }: { params: Promise<{ slug: st
 					<ol className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
 						{more.map((other) => (
 							<li key={other._id.toString()}>
-								<CardIssue issue={other as never} newsletter={newsletter as never} href={urls.post(other.archiveSlug!)} />
+								<CardIssue issue={other} newsletter={newsletter} href={urls.post(other.archiveSlug!)} />
 							</li>
 						))}
 					</ol>

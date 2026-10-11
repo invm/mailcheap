@@ -16,7 +16,7 @@ import {
 
 const ALL = "all";
 
-export default function FilterContacts({ newsletters }: { newsletters: { id: string; name: string; imageUrl?: string }[] }) {
+export default function FilterContacts({ newsletters }: { newsletters: { id: string; name: string; imageUrl?: string | null }[] }) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();

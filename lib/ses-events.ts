@@ -1,4 +1,5 @@
 import "server-only";
+import type { Types } from "mongoose";
 import { sendAlert } from "@/lib/alerts";
 import { withEngagement } from "@/lib/cleanup";
 import { connectDb } from "@/lib/db";
@@ -17,7 +18,7 @@ export { getSesEventPlan } from "@/lib/ses-event-mapping";
 // Every send produces a delivery event; storing those raw would fill a small cluster within months.
 const RECORDED_EVENT_TYPES = new Set(["Bounce", "Complaint", "Reject", "DeliveryDelay", "RenderingFailure"]);
 
-type LeanMessage = { _id: unknown; kind: string; campaignId?: unknown; contactId?: unknown; email: string; sesMessageId?: string | null; sentAt?: Date | null };
+type LeanMessage = { _id: Types.ObjectId; kind: string; campaignId?: Types.ObjectId | null; contactId?: Types.ObjectId | null; email: string; sesMessageId?: string | null; sentAt?: Date | null };
 type ApplyPlan = Pick<SesEventPlan, "firsts" | "status" | "error" | "engagement" | "occurredAt">;
 
 // The message_id tag covers events that arrive before sesMessageId is saved.
@@ -45,7 +46,7 @@ async function applyMessageUpdates(message: LeanMessage, plan: ApplyPlan): Promi
 
 	for (const { field, stat, contactStat } of plan.firsts) {
 		const { matchedCount } = await Message.updateOne(
-			{ _id: message._id as any, [field]: null } as any,
+			{ _id: message._id, [field]: null } as any,
 			{ $set: { [field]: plan.occurredAt } }
 		);
 		if (!matchedCount) continue;
@@ -55,19 +56,19 @@ async function applyMessageUpdates(message: LeanMessage, plan: ApplyPlan): Promi
 
 	if (plan.status) {
 		const { matchedCount } = await Message.updateOne(
-			{ _id: message._id as any, status: { $in: plan.status.from } } as any,
+			{ _id: message._id, status: { $in: plan.status.from } } as any,
 			{ $set: { status: plan.status.to } }
 		);
 		if (matchedCount && plan.status.stat) campaignInc[`${statsPath}.${plan.status.stat}`] = 1;
 	}
 
 	if (plan.error) {
-		await Message.updateOne({ _id: message._id as any } as any, { $set: { error: plan.error.slice(0, 500) } });
+		await Message.updateOne({ _id: message._id } as any, { $set: { error: plan.error.slice(0, 500) } });
 	}
 
 	const updates: Promise<unknown>[] = [];
 	if (CAMPAIGN_MESSAGE_KINDS.includes(message.kind) && message.campaignId && Object.keys(campaignInc).length > 0) {
-		updates.push(Campaign.updateOne({ _id: message.campaignId as any } as any, { $inc: campaignInc }));
+		updates.push(Campaign.updateOne({ _id: message.campaignId } as any, { $inc: campaignInc }));
 	}
 	if (message.contactId && (plan.engagement || Object.keys(contactInc).length > 0)) {
 		const update = {
@@ -76,7 +77,7 @@ async function applyMessageUpdates(message: LeanMessage, plan: ApplyPlan): Promi
 		};
 		updates.push(
 			Contact.updateOne(
-				{ _id: message.contactId as any } as any,
+				{ _id: message.contactId } as any,
 				plan.engagement ? withEngagement(update, plan.occurredAt) : update
 			)
 		);
@@ -106,7 +107,7 @@ async function suppress({ emails, reason, detail, contactStatus, contactStatusFr
 }
 
 // Mailcheap's own open pixel and click links update messages the way SES events do.
-export async function recordEngagement({ messageId, type, userAgent }: { messageId: string; type: string; userAgent: string }): Promise<void> {
+export async function recordEngagement({ messageId, type, userAgent }: { messageId: string; type: string; userAgent?: string }): Promise<void> {
 	await connectDb();
 	const message = await Message.findById(messageId).select("kind campaignId contactId sentAt").lean();
 	if (!message) return;

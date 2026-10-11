@@ -35,7 +35,7 @@ export default async function NewsletterPage({ params }: { params: Promise<{ id:
 			<HeaderPage
 				title={isNew ? "New newsletter" : newsletter!.name}
 				backHref="/newsletters"
-				icon={newsletter && <AvatarNewsletter newsletter={newsletter as never} size={32} />}
+				icon={newsletter && <AvatarNewsletter newsletter={newsletter} size={32} />}
 			/>
 			<FormNewsletter
 				newsletter={newsletter ? (serialize(newsletter) as never) : null}

@@ -28,7 +28,7 @@ async function getKey(): Promise<Uint8Array<ArrayBuffer>> {
 
 // Changing the admin email or password changes it, which signs out every session.
 async function getVersion(key: Uint8Array<ArrayBuffer>): Promise<string> {
-	const hmacKey = await crypto.subtle.importKey("raw", key, { name: "HMAC", hash: "SHA-256" } as never, false, ["sign"] as const);
+	const hmacKey = await crypto.subtle.importKey("raw", key, { name: "HMAC", hash: "SHA-256" }, false, ["sign"] as const);
 	const { ADMIN_EMAIL, ADMIN_PASSWORD } = process.env;
 	const signature = await crypto.subtle.sign("HMAC", hmacKey, encoder.encode(`version\n${ADMIN_EMAIL}\n${ADMIN_PASSWORD}`));
 	return base64url.encode(new Uint8Array(signature, 0, 16));

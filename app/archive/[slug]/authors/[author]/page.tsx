@@ -6,7 +6,6 @@ import ScriptJsonLd from "@/components/ScriptJsonLd";
 import { getArchiveAuthor } from "@/lib/archive-author";
 import { getArchiveNewsletter, listArchiveIssues } from "@/lib/archive-data";
 import { getArchiveUrls } from "@/lib/archive-hosts";
-import type { ArchiveNewsletter } from "@/lib/archive-seo";
 import { getAuthorSeo } from "@/lib/archive-seo";
 import { formatNumber } from "@/lib/format";
 
@@ -20,13 +19,13 @@ async function getAuthorPage(params: Promise<{ slug: string; author: string }>) 
 	const { slug, author: authorSlug } = await params;
 	const newsletter = await getArchiveNewsletter(slug);
 	if (!newsletter) return null;
-	const author = getArchiveAuthor(newsletter as never);
+	const author = getArchiveAuthor(newsletter);
 	return author.slug === authorSlug ? { newsletter, author } : null;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; author: string }> }) {
 	const page = await getAuthorPage(params);
-	return page ? getAuthorSeo(page.newsletter as unknown as ArchiveNewsletter).metadata : {};
+	return page ? getAuthorSeo(page.newsletter).metadata : {};
 }
 
 export default async function AuthorPage({ params }: { params: Promise<{ slug: string; author: string }> }) {
@@ -40,7 +39,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
 
 	return (
 		<>
-			<ScriptJsonLd data={getAuthorSeo(newsletter as unknown as ArchiveNewsletter).jsonLd} />
+			<ScriptJsonLd data={getAuthorSeo(newsletter).jsonLd} />
 			<section className="relative isolate overflow-hidden">
 				<div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[30rem] bg-dots" />
 				<div className="mx-auto flex max-w-2xl flex-col items-center px-5 pt-16 pb-14 text-center sm:pt-24 sm:pb-16">
@@ -85,8 +84,8 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
 						{issues.map((issue, index) => (
 							<li key={issue._id.toString()}>
 								<CardIssue
-									issue={issue as never}
-									newsletter={newsletter as never}
+									issue={issue}
+									newsletter={newsletter}
 									href={urls.post(issue.archiveSlug!)}
 									isEager={index === 0}
 								/>

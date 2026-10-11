@@ -24,8 +24,8 @@ export default async function KeepPage({ searchParams }: { searchParams: Promise
 			{newsletter ? (
 				<FormKeep
 					token={validToken as string}
-					newsletterName={newsletter.name as string}
-					archiveUrl={(newsletter.archiveEnabled ? getArchiveUrls(newsletter).siteIndex : null) as unknown as string | undefined}
+					newsletterName={newsletter.name}
+					archiveUrl={(newsletter.archiveEnabled ? getArchiveUrls(newsletter).siteIndex : null)}
 				/>
 			) : (
 				<CardNotice icon={Link2Off} title="This link doesn't work">
@@ -36,12 +36,14 @@ export default async function KeepPage({ searchParams }: { searchParams: Promise
 	);
 }
 
-async function getNewsletter(newsletterId: string) {
+type NewsletterForKeep = { name: string; slug: string; archiveEnabled: boolean };
+
+async function getNewsletter(newsletterId: string): Promise<NewsletterForKeep | null> {
 	try {
 		await connectDb();
 		return await Newsletter.findById(newsletterId)
 			.select({ name: 1, slug: 1, archiveEnabled: 1 })
-			.lean();
+			.lean() as unknown as NewsletterForKeep | null;
 	} catch (error) {
 		console.error("[keep] Could not load the newsletter:", (error as Error).message);
 		return null;

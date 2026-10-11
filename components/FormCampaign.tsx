@@ -31,7 +31,7 @@ import { UNSUBSCRIBE_PLACEHOLDER, renderEmail, withResponsiveImages } from "@/li
 import { slugify } from "@/lib/slug";
 import { useAutosave } from "@/lib/use-autosave";
 
-type CampaignProp = Omit<CampaignDoc, "_id" | "newsletterId"> & { _id: string };
+type CampaignProp = Omit<CampaignDoc, "_id" | "newsletterId" | "scheduledAt"> & { _id: string; scheduledAt?: string | null };
 type Values = { subject: string; previewText: string; body: string };
 type CampaignAction = (id: string) => Promise<{ error?: string } | null | undefined>;
 
@@ -183,7 +183,7 @@ export default function FormCampaign({
 				</Tooltip>
 				<DialogScheduleCampaign
 					campaignId={campaign._id}
-					scheduledAt={(campaign.status === "scheduled" ? campaign.scheduledAt : null) as unknown as string | null}
+					scheduledAt={(campaign.status === "scheduled" ? campaign.scheduledAt : null)}
 					audienceLimit={campaign.audienceLimit}
 					audienceCount={audienceCount}
 					history={sendTimes.history}
@@ -195,7 +195,7 @@ export default function FormCampaign({
 				<DialogSendCampaign
 					campaignId={campaign._id}
 					audienceCount={audienceCount}
-					scheduledAt={(campaign.status === "scheduled" ? campaign.scheduledAt : null) as unknown as string | null}
+					scheduledAt={(campaign.status === "scheduled" ? campaign.scheduledAt : null)}
 					isCleanupEnabled={Boolean(newsletter.cleanup?.enabled)}
 					blockingMessage={isUploading ? UPLOADING_MESSAGE : blocking[0]?.message}
 					onBeforeSend={persist}
@@ -220,7 +220,7 @@ export default function FormCampaign({
 				<DialogDiscardCampaign
 					id={campaign._id}
 					subject={values.subject}
-					scheduledAt={(campaign.status === "scheduled" ? campaign.scheduledAt : null) as unknown as string | null}
+					scheduledAt={(campaign.status === "scheduled" ? campaign.scheduledAt : null)}
 					isOpen={isDiscardOpen}
 					onOpenChange={setIsDiscardOpen}
 					redirectTo="/campaigns"

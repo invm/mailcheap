@@ -70,7 +70,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: Pro
 					<span />
 				)}
 				<div className="shrink-0">
-					<ButtonNewCampaign newsletters={toNewsletterOptions(newsletters) as any} />
+					<ButtonNewCampaign newsletters={toNewsletterOptions(newsletters)} />
 				</div>
 			</header>
 
@@ -130,7 +130,7 @@ async function StatsEmail({ newsletterId }: { newsletterId: Types.ObjectId }) {
 	const stats = await getEmailStats({ newsletterId });
 	return (
 		<div className="animate-fade-in">
-			<ListStats current={stats.current as any} previous={stats.previous as any} />
+			<ListStats current={stats.current} previous={stats.previous} />
 		</div>
 	);
 }
@@ -206,7 +206,7 @@ async function TableRecentCampaigns({ newsletterId, newsletters }: { newsletterI
 
 	return (
 		<div className="animate-fade-in">
-			<TableCampaigns campaigns={campaigns} newsletters={toNewsletterMap(newsletters) as any} />
+			<TableCampaigns campaigns={campaigns} newsletters={toNewsletterMap(newsletters)} />
 		</div>
 	);
 }

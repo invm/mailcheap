@@ -34,7 +34,7 @@ export default async function CampaignsPage() {
 	return (
 		<>
 			<HeaderPage title="Campaigns">
-				<ButtonNewCampaign newsletters={toNewsletterOptions(newsletters as any) as any} />
+				<ButtonNewCampaign newsletters={toNewsletterOptions(newsletters)} />
 			</HeaderPage>
 
 			{campaigns.length === 0 ? (
@@ -43,7 +43,7 @@ export default async function CampaignsPage() {
 				<div className="animate-enter">
 					<TableCampaigns
 						campaigns={campaigns}
-						newsletters={toNewsletterMap(newsletters as any) as any}
+						newsletters={toNewsletterMap(newsletters)}
 						hasActions
 						pageUrls={pageUrls}
 					/>

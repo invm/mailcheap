@@ -67,7 +67,7 @@ export function getCleanupDefaults() {
 	return DEFAULTS;
 }
 
-export function getCleanupSettings(newsletter: { cleanup?: { enabled?: boolean; issues?: number; days?: number } } | null | undefined): CleanupSettings {
+export function getCleanupSettings(newsletter: { cleanup?: { enabled?: boolean | null; issues?: number | null; days?: number | null } | null } | null | undefined): CleanupSettings {
 	const { enabled, issues, days } = newsletter?.cleanup ?? {};
 	return {
 		enabled: enabled === true,

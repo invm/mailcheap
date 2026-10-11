@@ -7,7 +7,7 @@ import CardNotice from "@/components/CardNotice";
 import { Button } from "@/components/ui/button";
 
 // Link scanners open the page without submitting forms, so only a person's browser confirms.
-export default function FormConfirm({ token, newsletterName, fromName, fromEmail, archiveUrl }: { token: string; newsletterName: string; fromName?: string; fromEmail: string; archiveUrl?: string }) {
+export default function FormConfirm({ token, newsletterName, fromName, fromEmail, archiveUrl }: { token: string; newsletterName: string; fromName?: string; fromEmail: string; archiveUrl?: string | null }) {
 	const [state, action, isPending] = useActionState(confirmSubscription.bind(null, token), null);
 	const formRef = useRef<HTMLFormElement>(null);
 

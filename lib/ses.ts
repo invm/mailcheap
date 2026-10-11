@@ -43,15 +43,19 @@ async function cached<T>(key: string, { fresh }: { fresh: boolean }, load: () =>
 	return value;
 }
 
-export function getSesAccount({ fresh = false } = {}) {
+export type SesAccount = { productionAccess: boolean; reviewStatus: string | null; sendingEnabled: boolean; enforcementStatus: string | undefined; max24HourSend: number; maxSendRate: number; sentLast24Hours: number } | { error: string };
+export type SesDomain = { domain: string; verified: boolean; dkimStatus: string; mailFromDomain: string | null; mailFromStatus: string | null; records: Array<{ type: string; name: string; value: string }> };
+export type SesDomainsResult = SesDomain[] | { error: string };
+
+export function getSesAccount({ fresh = false } = {}): Promise<SesAccount> {
 	return cached("account", { fresh }, loadSesAccount);
 }
 
-export function listSesDomains({ fresh = false } = {}) {
+export function listSesDomains({ fresh = false } = {}): Promise<SesDomainsResult> {
 	return cached("domains", { fresh }, loadSesDomains);
 }
 
-async function loadSesAccount() {
+async function loadSesAccount(): Promise<SesAccount> {
 	try {
 		const account = await read(new GetAccountCommand({}));
 		return {
@@ -84,7 +88,7 @@ function dnsRecords(domain: string | undefined, identity: GetEmailIdentityComman
 	return [...dkim, ...bounce];
 }
 
-async function loadSesDomains() {
+async function loadSesDomains(): Promise<SesDomainsResult> {
 	try {
 		const { EmailIdentities = [] } = await read(new ListEmailIdentitiesCommand({ PageSize: 100 }));
 		const domains = EmailIdentities.filter((identity: any) => identity.IdentityType === "DOMAIN");

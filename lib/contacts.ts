@@ -5,7 +5,7 @@ import Newsletter from "@/models/Newsletter";
 import Suppression from "@/models/Suppression";
 
 // Newsletters in creation order with their active contacts, counted from the index in the same round trip.
-export function listNewslettersWithActiveCounts(fields: string | null | undefined) {
+export function listNewslettersWithActiveCounts(fields?: string | null) {
 	return Newsletter.aggregate([
 		{ $sort: { createdAt: 1 } },
 		...(fields ? [{ $project: Object.fromEntries(fields.split(" ").map((field) => [field, 1])) }] : []),

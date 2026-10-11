@@ -48,8 +48,8 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
 
 	await connectDb();
 	const newsletters = await Newsletter.find().sort({ createdAt: 1 }).select(NEWSLETTER_SUMMARY_FIELDS).lean();
-	const newsletterOptions = toNewsletterOptions(newsletters as never);
-	const newsletterMap = toNewsletterMap(newsletters as never);
+	const newsletterOptions = toNewsletterOptions(newsletters);
+	const newsletterMap = toNewsletterMap(newsletters);
 
 	const baseFilter = {
 		...(newsletterId && { newsletterId: new Types.ObjectId(newsletterId) }),
@@ -86,12 +86,12 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
 	return (
 		<>
 			<HeaderPage title="Contacts">
-				<DialogImportContacts newsletters={newsletterOptions as never} defaultNewsletterId={newsletterId} />
+				<DialogImportContacts newsletters={newsletterOptions} defaultNewsletterId={newsletterId} />
 			</HeaderPage>
 
 			<div className="flex flex-col gap-4">
 				<Suspense fallback={<Skeleton className="h-9 w-full rounded-lg" />}>
-					<FilterContacts newsletters={newsletterOptions as never} />
+					<FilterContacts newsletters={newsletterOptions} />
 				</Suspense>
 
 				<nav
@@ -157,7 +157,7 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
 										{!newsletterId && (
 											<TableCell className="hidden text-muted-foreground md:table-cell">
 												<span className="flex items-center gap-2">
-													<AvatarNewsletter newsletter={newsletterMap[contact.newsletterId.toString()] as never} size={18} />
+													<AvatarNewsletter newsletter={newsletterMap[contact.newsletterId.toString()]} size={18} />
 													<span className="truncate">{newsletterMap[contact.newsletterId.toString()]?.name}</span>
 												</span>
 											</TableCell>

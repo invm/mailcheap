@@ -14,7 +14,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-type Newsletter = { id: string; name: string; imageUrl?: string };
+type Newsletter = { id: string; name: string; imageUrl?: string | null };
 
 type Props = {
 	newsletters: Newsletter[];

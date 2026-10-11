@@ -29,7 +29,7 @@ import { MAX_IMPORT_ROWS_PER_REQUEST, mapColumns, normalizeImportRow } from "@/l
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-type Newsletter = { id: string; name: string; imageUrl?: string };
+type Newsletter = { id: string; name: string; imageUrl?: string | null };
 
 type Props = {
 	newsletters: Newsletter[];

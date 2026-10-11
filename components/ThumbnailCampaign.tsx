@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 type Props = {
 	campaign: { thumbnailUrl?: string | null };
-	newsletter: { imageUrl?: string; name?: string } | null | undefined;
+	newsletter: { imageUrl?: string | null; name?: string } | null | undefined;
 	width?: number;
 	height?: number;
 	hasBadge?: boolean;

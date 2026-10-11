@@ -24,10 +24,10 @@ export default async function ConfirmPage({ searchParams }: { searchParams: Prom
 			{newsletter ? (
 				<FormConfirm
 					token={validToken as string}
-					newsletterName={newsletter.name as string}
-					fromName={newsletter.fromName as unknown as string | undefined}
-					fromEmail={newsletter.fromEmail as unknown as string}
-					archiveUrl={(newsletter.archiveEnabled ? getArchiveUrls(newsletter).siteIndex : null) as unknown as string | undefined}
+					newsletterName={newsletter.name}
+					fromName={newsletter.fromName}
+					fromEmail={newsletter.fromEmail}
+					archiveUrl={(newsletter.archiveEnabled ? getArchiveUrls(newsletter).siteIndex : null)}
 				/>
 			) : (
 				<CardNotice icon={Link2Off} title="This link doesn't work">
@@ -38,12 +38,14 @@ export default async function ConfirmPage({ searchParams }: { searchParams: Prom
 	);
 }
 
-async function getNewsletter(newsletterId: string) {
+type NewsletterForConfirm = { name: string; slug: string; fromName?: string; fromEmail: string; archiveEnabled: boolean };
+
+async function getNewsletter(newsletterId: string): Promise<NewsletterForConfirm | null> {
 	try {
 		await connectDb();
 		return await Newsletter.findById(newsletterId)
 			.select({ name: 1, slug: 1, fromName: 1, fromEmail: 1, archiveEnabled: 1 })
-			.lean();
+			.lean() as unknown as NewsletterForConfirm | null;
 	} catch (error) {
 		console.error("[confirm] Could not load the newsletter:", (error as Error).message);
 		return null;
